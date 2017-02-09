@@ -1,0 +1,6 @@
+{
+    "host" : "13.82.225.164",
+    "port" : "8080",
+    "singleScanEP" : "/clamAV/scan",
+    "multiScanEP" : "/clamAV/multiscan"
+}

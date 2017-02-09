@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "Rakesh Jaiswal",
   "description": "Treatment Controller.",
-  "main": "TreatmentController.js",
+  "main": "index.js",
   "contributors": [
   ],
   "scripts": {
