@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TreatmentCatalogue>
+	<Treatment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TreatmentCatalogue.xsd">
+		<Name>ClamAV Treatment</Name>
+		<Version>1</Version>
+		<CreateDate>2001-12-17T09:30:47+05:00</CreateDate>
+		<Status>Active</Status>
+		<Description>This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment</Description>
+		<Owner>JoeBloggs</Owner>
+		<TrreatmentType>
+			<IsTransformed>false</IsTransformed>
+			<IsCOTs>true</IsCOTs>
+			<IsCustom>true</IsCustom>
+		</TrreatmentType>
+		<Configuration>
+			<AzureImageData>text</AzureImageData>
+			<ImageID>ASA3145342dfs35df432qdf34dfw2rf</ImageID>
+		</Configuration>
+	</Treatment>
+</TreatmentCatalogue>

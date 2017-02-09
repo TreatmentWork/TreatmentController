@@ -1,0 +1,31 @@
+{
+  "name": "TreatmentController",
+  "version": "0.0.1",
+  "author": "Rakesh Jaiswal",
+  "description": "Treatment Controller.",
+  "main": "TreatmentController.js",
+  "contributors": [
+  ],
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com"
+  },
+  "dependencies": {
+    "express": ">=4.14.0",
+    "body-parser": ">=1.16.0",
+ 	  "xml2js": "0.4.17"
+  },
+  "keywords": [
+    "Treatment"
+  ],
+  "license": "Test",
+  "engines": {
+    "node": ">=4.2.0"
+  },
+  "bugs": {
+    "url": "https://github.com/"
+  }
+}
