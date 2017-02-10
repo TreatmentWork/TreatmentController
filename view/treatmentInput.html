@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <form action="/treatment/do/clamAV/singlescan" method="post">
+        Scan File Name: <input name="scanFile" type="text" /> <br />
+        Treatment Type:
+        <select name="TreatmentType" >
+            <option value="ClamAV">ClamAV</option>
+            <option value="ClamAVFuture">ClamAVFuture</option>
+        </select>
+        <br>
+        Version :  <input name="Version" type="text" />
+        <br />
+        <input type="submit" />
+    </form>
+</body>
+</html>
