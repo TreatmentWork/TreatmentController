@@ -6,6 +6,8 @@ var clamTreatment = require('./clamAvTreatment.js');
 var treatmentCatalogue = require('./treatmentCatalogue.js');
 var viewLocation= appRoot + '/view';
 
+app.use(express.static(__dirname + '/public'));
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 // parse application/json
