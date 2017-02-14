@@ -14,367 +14,414 @@ text {
 
 </style>
 <head>
-    <meta charset="utf-8" />
-    <script type="text/JavaScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script type="text/javascript" src="test.json"></script>
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.1.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script src=”jquery-latest.pack.js” type=”text/javascript”></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
+  <meta charset="utf-8" />
+  <script type="text/JavaScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <!-- <script type="text/javascript" src="test.json"></script> -->
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.10.1.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
-<link rel="stylesheet" href="css/rads-style.css">
-    <title></title>
+  <script src=”jquery-latest.pack.js” type=”text/javascript”></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+
+  <link rel="stylesheet" href="css/rads-style.css">
+  <title></title>
 </head>
 <body>
   <header>
-   <h1>RADS prototype</h1>
+    <h1>RADS prototype</h1>
   </header>
 
-    <!-- <form action="/treatment/do/clamAV/singlescan" method="post">
-        Scan File Name: <input name="scanFile" type="text" /> <br />
-        Treatment Type:
-        <select name="TreatmentType" >
-            <option value="ClamAV">ClamAV</option>
-            <option calue="notClam">Not clam</option>
-        </select>
-        <br />
-        <input type="submit" />
-
-        action="/treatment/do/clamAV/multiscan"
-    </form> -->
-
-    <div class="container">
-     <!-- <form action="/treatment/do/clamAV/singlescan" method="post"> -->
-      <form name="submitForm" method="post" onsubmit=onsubmitFunc();>
-        <!-- <input type="button" id="btnAdd" value='check console' onclick="onsubmitFunc()"> -->
-    <nav>
-      <h1>Choose the files you want to run</h1>
-      <!-- <div>
+  <div class="container">
+    <form name="submitForm" method="post" onsubmit=onsubmitFunc();>
+      <!-- <input type="button" id="btnAdd" value='check console' onclick="onsubmitFunc()"> -->
+      <nav>
+        <h1>Choose Files:</h1>
+        <!-- <div>
         <p>Upload files from computer:</p>
-              <form action="myform.cgi">
-              <input type="file" name="scanFile" value="fileupload" id="fileupload">
-              <label for="fileupload"> Select a file to upload</label>
-              <input type="submit" value="submit">
-              </form>
-      </div> -->
-      <div>
-        <br/>
-        <p>Choose files from dropdown:</p>
-         <select id="filedropDown"  onchange="selectFile(this);">
-         <!-- <select id="filedropDown"  onchange="addFile()"> -->
+        <form action="myform.cgi">
+        <input type="file" name="scanFile" value="fileupload" id="fileupload">
+        <label for="fileupload"> Select a file to upload</label>
+        <input type="submit" value="submit">
+      </form>
+    </div> -->
+    <div>
 
-           <option>Please select files</option>
-         </select>
-          <ul class="options" id="chosenFiles">
+      <p>Choose files from dropdown:</p>
+      <select id="filedropDown"  onchange="selectFile(this);">
 
-          </ul>
-        </div>
+        <option>Please select files</option>
+      </select>
+      <ul class="options" id="chosenFiles">
 
-    </nav>
-
-    <article>
-    <h1>Choose the treatment you want to run</h1>
-
-    <p id="selectedTreatment"></p><input type="button" id="btnShow" value='View Description' onclick="viewDescription()">
-
-    <br/>
-    <p id="treatmentDescription"></p>
-    <br/>
-
-    <input type="button" id="btnAdd" value='Add Treatment' onclick="addTreatment()">
-    <!-- <input type="button" id="btnAdd" value='check console' onclick="consolecheck()"> -->
-
-    <ul class="options" id="chosenTreatments" >
-
-    </ul>
-
-
-
-</div><br/>
-       <script src="http://d3js.org/d3.v3.min.js"></script>
-       <script>
-    //d3 code
-       var width = 960,
-           height = 700,
-           radius = Math.min(width, height) / 2;
-
-       var x = d3.scale.linear()
-           .range([0, 2 * Math.PI]);
-
-       var y = d3.scale.linear()
-           .range([0, radius]);
-
-       var color = d3.scale.category20c();
-
-       var svg = d3.select("body").append("svg")
-           .attr("width", width)
-           .attr("height", height)
-         .append("g")
-           .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
-
-       var partition = d3.layout.partition()
-           .value(function(d) { return d.size; });
-
-       var arc = d3.svg.arc()
-           .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-           .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-           .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-           .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
-
-       d3.json("flare.json", function(error, root) {
-         var g = svg.selectAll("g")
-             .data(partition.nodes(root))
-           .enter().append("g");
-
-         var path = g.append("path")
-           .attr("d", arc)
-           .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
-           .on("click", click);
-
-         var text = g.append("text")
-           .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
-           .attr("x", function(d) { return y(d.y); })
-           .attr("dx", "6") // margin
-           .attr("dy", ".35em") // vertical-align
-           .text(function(d) { return d.name; });
-
-
-         function click(d) {
-           // fade out all text elements
-           text.transition().attr("opacity", 0);
-
-           path.transition()
-             .duration(750)
-             .attrTween("d", arcTween(d))
-             .each("end", function(e, i) {
-                 // check if the animated element's data e lies within the visible angle span given in d
-                 if (e.x >= d.x && e.x < (d.x + d.dx)) {
-                   // get a selection of the associated text element
-                   var arcText = d3.select(this.parentNode).select("text");
-                   // fade in the text element and recalculate positions
-                   arcText.transition().duration(750)
-                     .attr("opacity", 1)
-                     .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
-                     .attr("x", function(d) { return y(d.y);
-                     });
-
-                  var chosenTreat = d3.select(this.parentNode).text();
-                  console.log(chosenTreat);
-                  document.getElementById("selectedTreatment").innerHTML = chosenTreat;
-
-
-                }
-
-
-             });
-         }
-       });
-
-       d3.select(self.frameElement).style("height", height + "px");
-
-       // Interpolate the scales!
-       function arcTween(d) {
-         var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-             yd = d3.interpolate(y.domain(), [d.y, 1]),
-             yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-         return function(d, i) {
-           return i
-               ? function(t) { return arc(d); }
-               : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-         };
-       }
-
-       function computeTextRotation(d) {
-         return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
-       }
-
-       </script>
-
-
-
-    </article>
-
-    <input type="hidden" name ="scanFiles" id="scanFiles" >
-    <input type="hidden" name ="scanFile" id="scanFile" >
-
-        <input type="submit">
-</form>
+      </ul>
     </div>
+
+  </nav>
+
+  <article>
+    <div>
+
+      <h1>Choose Treatment:</h1>
+      <p>
+        Select treatment using the taxonomy wheel. Descriptions are provided when you select a treatment.
+      </p>
+      <div id="selectedInfo">
+
+        <p id="selectedTreatment"></p>
+        <!-- <input type="button" id="btnShow" value='View Description' onclick="viewDescription()"> -->
+
+        <p id="treatmentDescription"></p>
+      </div>
+      <br/>
+      <input type="button" id="btnAdd" value='Add Treatment' onclick="addTreatment()">
+      <!-- <input type="button" id="btnAdd" value='check console' onclick="selectVersion()"> -->
+    </div>
+    <div class="selected">
+
+      <div class="selectedTreatment">
+        <ul class="options" id="chosenTreatments" >
+
+        </ul>
+      </div>
+      <div class="selectedVersion">
+        <select id="version">
+          <option>Please select version</option>
+        </select>
+      </div>
+    </div><br/>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
     <script>
+    //d3 code
+    var width = 960,
+    height = 700,
+    radius = Math.min(width, height) / 2;
 
+    var x = d3.scale.linear()
+    .range([0, 2 * Math.PI]);
 
+    var y = d3.scale.linear()
+    .range([0, radius]);
 
+    var color = d3.scale.category20c();
 
-    //add treatments to bullet list
-var checktreatment;
-        var list = document.getElementById('chosenTreatments');
+    var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
-        function addTreatment() {
-            var x = document.getElementById('selectedTreatment').innerHTML;
-            var entry = document.createElement('li');
-            entry.appendChild(document.createTextNode(x));
-            var input = document.createElement('input');
+    var partition = d3.layout.partition()
+    .value(function(d) { return d.size; });
 
-            input.type = 'hidden';
-            input.value = "ClamAV";
-            input.name = 'TreatmentType';
-            input.id='TreatmentType';
-            list.appendChild(entry);
-            list.appendChild(input);
+    var arc = d3.svg.arc()
+    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+    .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+    .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-            entry.setAttribute("name", "TreatmentType");
-            // entry.setAttribute("id","TreatmentType");
+    d3.json("flare.json", function(error, root) {
+      var g = svg.selectAll("g")
+      .data(partition.nodes(root))
+      .enter().append("g");
 
-            entry.onclick = function() {this.parentNode.removeChild(this);}
+      var path = g.append("path")
+      .attr("d", arc)
+      .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+      .on("click", click);
 
+      var text = g.append("text")
+      .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
+      .attr("x", function(d) { return y(d.y); })
+      .attr("dx", "6") // margin
+      .attr("dy", ".35em") // vertical-align
+      .text(function(d) { return d.name; });
 
+      var chosenTreat;
+      function click(d) {
+        // fade out all text elements
+        text.transition().attr("opacity", 0);
 
-        }
+        path.transition()
+        .duration(750)
+        .attrTween("d", arcTween(d))
+        .each("end", function(e, i) {
+          // check if the animated element's data e lies within the visible angle span given in d
+          if (e.x >= d.x && e.x < (d.x + d.dx)) {
+            // get a selection of the associated text element
+            var arcText = d3.select(this.parentNode).select("text");
+            // fade in the text element and recalculate positions
+            arcText.transition().duration(750)
+            .attr("opacity", 1)
+            .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
+            .attr("x", function(d) { return y(d.y);
+            });
 
-
-        function readTextFile(file, callback) {
-          var rawFile = new XMLHttpRequest();
-          rawFile.overrideMimeType("application/json");
-          rawFile.open("GET", file, true);
-          rawFile.onreadystatechange = function() {
-              if (rawFile.readyState === 4 && rawFile.status == "200") {
-                  callback(rawFile.responseText);
-              }
+            var chosenTreat = d3.select(this.parentNode).text();
+            console.log(chosenTreat);
+            document.getElementById("selectedTreatment").innerHTML = chosenTreat;
+            var addCSS = document.getElementById("selectedInfo");
+            addCSS.setAttribute("class","selectedInfo");
           }
-          rawFile.send(null);
+        });
       }
-    var data ;
-      //usage:
-      readTextFile("test.json", function(text){
-           data = JSON.parse(text);
-
-                 $.each(data.Files, function (key, value) {
-                     $("#filedropDown").append($('<option></option>').val(value.name).html(value.path));
-                 });
-
     });
 
+    d3.select(self.frameElement).style("height", height + "px");
 
-
-
-    function readTextFile(file, callback) {
-      var rawFile = new XMLHttpRequest();
-      rawFile.overrideMimeType("application/json");
-      rawFile.open("GET", file, true);
-      rawFile.onreadystatechange = function() {
-          if (rawFile.readyState === 4 && rawFile.status == "200") {
-              callback(rawFile.responseText);
-          }
-      }
-      rawFile.send(null);
+    // Interpolate the scales!
+    function arcTween(d) {
+      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+      yd = d3.interpolate(y.domain(), [d.y, 1]),
+      yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+      return function(d, i) {
+        return i
+        ? function(t) { return arc(d); }
+        : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+      };
     }
-    var flaredata ;
-    //usage:
-    readTextFile("flaretesting.json", function(flaretext){
-       flaredata = JSON.parse(flaretext);
-    console.log(flaredata);
 
-
-    });
-
-
-     function viewDescription() {
-       document.getElementById("treatmentDescription").innerHTML = flaredata;
-    console.log(flaredata.children.name);
-     };
-
-
-
-
-
-    //choose from file list
-    function selectFile(select)
-    {
-      var text;
-      var option = select.options[select.selectedIndex];
-      var ul = select.parentNode.getElementsByTagName('ul')[0];
-
-      var choices = ul.getElementsByTagName('li');
-      for (var i = 0; i < choices.length; i++)
-        if (choices[i].value == option.value)
-          return;
-
-      var li = document.createElement('li');
-       var input = document.createElement('input');
-      var text = document.createTextNode(option.firstChild.data);
-
-
-
-      input.type = 'hidden';
-      input.name = 'scanFile';
-
-      li.appendChild(text);
-      li.setAttribute("name","scanFile");
-
-      li.setAttribute('onclick', 'this.parentNode.removeChild(this);');
-      ul.appendChild(li);
-
-      var i=0;
-      $("li[name = 'scanFile']").each(function(){
-          i++;
-          var newID='scanFile'+i;
-          $(this).attr('id',newID);
-
-
-      });
-
-// var inputval = document.getElementById("chosenFiles").getElementsByTagName("li");
-
-}
-//     function consolecheck() {
-// var checktreatment = document.getElementById("TreatmentType").innerHTML;
-// // var checkfile = document.getElementById("scanFile").innerHTML;
-// console.log(checktreatment);
-// //console.log(checkfile);
-// }
-
-
-
+    function computeTextRotation(d) {
+      return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+    }
     </script>
+
+  </article>
+  <input type="hidden" name ="Version" id="Version" >
+  <input type="hidden" name ="scanFiles" id="scanFiles" >
+  <input type="hidden" name ="scanFile" id="scanFile" >
+
+  <input type="submit" class="submit-btn">
+</form>
+</div>
+
 <script>
+//add treatments to bullet list
+var checktreatment;
+var list = document.getElementById('chosenTreatments');
+
+function addTreatment() {
+  var x = document.getElementById('selectedTreatment').innerHTML;
+  var entry = document.createElement('li');
+  entry.appendChild(document.createTextNode(x));
+  var input = document.createElement('input');
+
+  input.type = 'hidden';
+  input.value = "ClamAV";
+  input.name = 'TreatmentType';
+  input.id='TreatmentType';
+  list.appendChild(entry);
+  list.appendChild(input);
+
+  entry.setAttribute("name", "TreatmentType");
+  // entry.setAttribute("id","TreatmentType");
+
+  entry.onclick = function() {this.parentNode.removeChild(this);}
+}
+
+//read files from json and populate dropdown
+function readTextFile(file, callback) {
+  var rawFile = new XMLHttpRequest();
+  rawFile.overrideMimeType("application/json");
+  rawFile.open("GET", file, true);
+  rawFile.onreadystatechange = function() {
+    if (rawFile.readyState === 4 && rawFile.status == "200") {
+      callback(rawFile.responseText);
+    }
+  }
+  rawFile.send(null);
+}
+var data ;
+//usage:
+readTextFile("files.json", function(text){
+  data = JSON.parse(text);
+
+  $.each(data.Files, function (key, value) {
+    $("#filedropDown").append($('<option></option>').val(value.name).html(value.path));
+  });
+
+});
+
+//load in treatment data
+var flaredata ;
+function readTextFile(file, callback) {
+  var rawFile = new XMLHttpRequest();
+  rawFile.overrideMimeType("application/json");
+  rawFile.open("GET", file, true);
+  rawFile.onreadystatechange = function() {
+    if (rawFile.readyState === 4 && rawFile.status == "200") {
+      callback(rawFile.responseText);
+    }
+  }
+  rawFile.send(null);
+}
+//usage:
+readTextFile("flareData.json", function(flaretext){
+  flaredata = JSON.parse(flaretext);
+  console.log(flaredata);
+});
+
+//load in treatment versions and description
+var treatmentInfo;
+function readTextFile(file, callback) {
+  var rawFile = new XMLHttpRequest();
+  rawFile.overrideMimeType("application/json");
+  rawFile.open("GET", file, true);
+  rawFile.onreadystatechange = function() {
+    if (rawFile.readyState === 4 && rawFile.status == "200") {
+      callback(rawFile.responseText);
+    }
+  }
+  rawFile.send(null);
+}
+readTextFile("treatmentInfo.json", function(infotext){
+  treatmentInfo = JSON.parse(infotext);
+});
+
+//populate version dropdown
+function selectVersion() {
+  var treatname = document.getElementById('selectedTreatment').textContent;
+  var description = ".Description"
+  var lookup = treatname + description;
+
+  Object.byString = function(o, s) {
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, '');           // strip a leading dot
+    var a = s.split('.');
+    for (var i = 0, n = a.length; i < n; ++i) {
+      var k = a[i];
+      if (k in o) {
+        o = o[k];
+      } else {
+        return;
+      }
+    }
+    return o;
+  }
+
+  var descriptionText = Object.byString(treatmentInfo, lookup);
+
+  document.getElementById("treatmentDescription").innerHTML = descriptionText;
+  if (document.getElementById("treatmentDescription").innerHTML == "undefined"){
+    document.getElementById("treatmentDescription").innerHTML = "";
+  }
+
+
+
+
+  var version = ".Version"
+  var lookupVersion = treatname + version;
+  var versionText = Object.byString(treatmentInfo, lookupVersion);
+  console.log(versionText);
+
+  var ver = document.getElementById("version");
+  var verOptions = versionText;
+  for(var i = 0; i < verOptions.length; i++) {
+    var opt = verOptions[i];
+    var el = document.createElement("option");
+    el.textContent = opt;
+    el.value = opt;
+    ver.appendChild(el);
+  }
+}
+
+$("#version").change(function(){
+  document.getElementById("Version").value = document.getElementById("version").value;
+
+});
+
+//choose from file list and add to bullet list
+function selectFile(select)
+{
+  var text;
+  var option = select.options[select.selectedIndex];
+  var ul = select.parentNode.getElementsByTagName('ul')[0];
+
+  var choices = ul.getElementsByTagName('li');
+  for (var i = 0; i < choices.length; i++)
+  if (choices[i].value == option.value)
+  return;
+
+  var li = document.createElement('li');
+  var input = document.createElement('input');
+  var text = document.createTextNode(option.firstChild.data);
+
+  input.type = 'hidden';
+  input.name = 'scanFile';
+
+  li.appendChild(text);
+  li.setAttribute("name","scanFile");
+
+  li.setAttribute('onclick', 'this.parentNode.removeChild(this);');
+  ul.appendChild(li);
+
+  var i=0;
+  $("li[name = 'scanFile']").each(function(){
+    i++;
+    var newID='scanFile'+i;
+    $(this).attr('id',newID);
+  });
+}
+</script>
+
+<script>
+//watch for change in treatment selection on wheel
+window.onload = function() {
+
+  var target = document.getElementById("selectedTreatment");
+
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      selectVersion()
+    });
+  });
+
+  var config = {
+    childList: true,
+    subtree: true,
+    characterData: true
+  };
+
+  observer.observe(target, config);
+}
+</script>
+
+<script>
+//switch between single and multi input form
 function onsubmitFunc() {
   console.log("starting");
 
-    if ($('#chosenFiles li').length>=2) {
-      console.log("multiscan");
+  if ($('#chosenFiles li').length>=2) {
+    console.log("multiscan");
     document.submitForm.action ="/treatment/do/clamAV/multiscan";
     scanFilesFunc();
-    }
-    else {
-      console.log("singlescan");
+  }
+  else {
+    console.log("singlescan");
     document.submitForm.action ="/treatment/do/clamAV/singlescan";
     scanFileFunc();
-    };
+  };
 }
 </script>
 
-
-
-    <script type="text/javascript">
-        function scanFilesFunc() {
-          var all = [];
-          all.push(document.getElementById("scanFile1").textContent);
-          all.push(document.getElementById("scanFile2").textContent);
-          document.getElementById("scanFiles").value = JSON.stringify(all) ;
-            console.log('scanFile2:' + document.getElementById("scanFiles").value);
-      }
+<script type="text/javascript">
+//input multiple files into submit form
+function scanFilesFunc() {
+  var all = [];
+  all.push(document.getElementById("scanFile1").textContent);
+  all.push(document.getElementById("scanFile2").textContent);
+  document.getElementById("scanFiles").value = JSON.stringify(all) ;
+  console.log('scanFile2:' + document.getElementById("scanFiles").value);
+}
 </script>
-      <script type="text/javascript">
-
-      function scanFileFunc() {
-        document.getElementById("scanFile").value = document.getElementById("scanFile1").innerHTML;
-        // document.getElementById("scanFile").value = all ;
-          console.log('scanFile:' + document.getElementById("scanFile").value);
-    }
-
-
-
-      </script>
+<script type="text/javascript">
+//input file into submit form
+function scanFileFunc() {
+  document.getElementById("scanFile").value = document.getElementById("scanFile1").innerHTML;
+  // document.getElementById("scanFile").value = all ;
+  console.log('scanFile:' + document.getElementById("scanFile").value);
+}
+</script>
 
 
 </body>

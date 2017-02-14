@@ -4,9 +4,10 @@ var http = require('http');
 var bodyParser = require("body-parser");
 var clamTreatment = require('./clamAvTreatment.js');
 var treatmentCatalogue = require('./treatmentCatalogue.js');
+var logger = require(appRoot + '/js/util/winstonConfig.js');
 var viewLocation= appRoot + '/view';
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(appRoot + '/public'));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,17 +19,17 @@ app.get('/singleTreatment', function (req, res) {
 });
 
 app.get('/multipleTreatment', function (req, res) {
-      res.sendFile('treatmentMultiInput.html', { root: viewLocation});
+    res.sendFile('treatmentMultiInput.html', { root: viewLocation});
 });
 
 app.get('/showTreatments', function (req, res) {
-      res.sendFile('treatmentCatInput.html', { root: viewLocation});
+    res.sendFile('treatmentCatInput.html', { root: viewLocation});
 });
 
 app.post('/showTreatments/do', function (req, res) {
-      treatmentCatalogue.getTreatmentCatalogue (function (data) {
-      res.send(data);
-    });
+    treatmentCatalogue.getTreatmentCatalogue (function (data) {
+    res.send(data);
+  });
 });
 
 app.post('/treatment/do/clamAV/singlescan', function (req, res) {
@@ -37,11 +38,13 @@ app.post('/treatment/do/clamAV/singlescan', function (req, res) {
       // TODO: Call VM creation before calling Treatment
       var postData = JSON.stringify({  scanFile: req.body.scanFile  });
       clamTreatment.doSingleClamTreatment(postData, function(data){
-        console.log(data);
+        logger.info('Result:' + data);
         res.send('<pre>'+ data + '</pre>');
     });
     } else {
-      res.send('Unsupported Treatment: ' + req.body.TreatmentType + ', Version' + req.body.Version);
+      var err = 'Unsupported Treatment: ' + req.body.TreatmentType + ', Version' + req.body.Version;
+      logger.error(err);
+      res.send(err);
     }
   });
 });
@@ -53,17 +56,19 @@ app.post('/treatment/do/clamAV/multiscan', function (req, res) {
         var files = JSON.parse(req.body.scanFiles);
         var postData = JSON.stringify({  scanFiles: files  });
         clamTreatment.doMultipleClamTreatment( postData, function(data){
-          console.log(data);
+          logger.info('Result:' + data);
           res.send('<pre>'+ data + '</pre>');
       });
 
       } else {
-        res.send('Unsupported Treatment: ' + req.body.TreatmentType + ', Version' + req.body.Version);
+        var err = 'Unsupported Treatment: ' + req.body.TreatmentType + ', Version' + req.body.Version;
+        logger.error(err);
+        res.send(err);
       }
     });
 });
 
 
 var server = app.listen(8001, function () {
-      console.log('Node server is running..');
+    logger.info('TreatmentController Node server is running.. at port 8001');
 });

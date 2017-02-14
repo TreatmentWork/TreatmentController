@@ -1,6 +1,7 @@
 var http = require('http');
 var bodyParser = require("body-parser");
 var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
+var logger = require(appRoot + '/js/util/winstonConfig.js');
 
 var  doSingleClamTreatment = function  (postData, callback) {
   doClamTreatment(postData, clamTAConfig.singleScanEP, callback);
@@ -45,17 +46,17 @@ var  doClamTreatment = function  (postData, endpoint, callback) {
     });
     //response error
     resHttp.on('error', function (err) {
-      console.log(err);
+      logger.error(err);
     });
   });
 
   // request error
   reqHttp.on('error', function (err) {
-    console.log(err);
+      logger.error(err);
   });
 
   //send request witht the postData form
-  console.log('postdata:' + postData);
+  logger.debug('postData:' + postData);
   reqHttp.write(postData);
   reqHttp.end();
 

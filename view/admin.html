@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<style>
+
+
+</style>
+<head>
+
+  <link rel="stylesheet" href="rads-style-admin.css">
+</head>
+<body>
+  <header>
+   <h1>RADS prototype</h1>
+  </header>
+
+
+
+<div class="container">
+
+<nav>
+
+<br/>
+
+<p class="filesRunning"><b>3</b></p>
+  <p>files are running</p>
+
+
+
+</nav>
+
+<article>
+  <h1>Ongoing Jobs</h1>
+  <br/>
+  <br/>
+  <table>
+    <tr>
+      <th id="col3">JobID</th>
+      <th id="col3">Username</th>
+      <th id="col1">File name</th>
+      <th id="col2">Start time</th>
+      <th id="col3">Payload</th>
+      <th id="col3">Progess</th>
+      <th id="col3">Cancel</th>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>username1</td>
+      <td>file4</td>
+      <td>12:00</td>
+      <td>payload4</td>
+      <td>
+        <div id="myProgress">
+          <div id="progressBar">
+            <div id="label">0%</div>
+          </div>
+        </div>
+      </td>
+      <td><button>cancel</button></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>username1</td>
+      <td>file5</td>
+      <td>12:03</td>
+      <td>payload5</td>
+      <td>
+        <div id="myProgress">
+          <div id="progressBar">
+            <div id="label">0%</div>
+          </div>
+        </div>
+      </td>
+      <td><button>cancel</button></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>username2</td>
+      <td>file6</td>
+      <td>12:10</td>
+      <td>payload6</td>
+      <td>
+        <div id="myProgress">
+          <div id="progressBar">
+            <div id="label">0%</div>
+          </div>
+        </div>
+      </td>
+      <td><button>cancel</button></td>
+    </tr>
+  </table>
+
+  <br/>
+
+  <button onclick="move()" class="test-btn">test progress bar</button>
+ <br/>
+ <br/>
+<h1>Historical Records</h1>
+ <div class="history">
+   <table id="historicalRecords">
+     <tr>
+       <th id="col3">JobID</th>
+       <th id="col3">Username</th>
+       <th id="col1">File name</th>
+       <th id="col2">Treatment name</th>
+       <th id="col3">Start time</th>
+       <th id="col1">End time</th>
+       <th id="col2">Duration</th>
+       <th id="col3">Result</th>
+       <th id="col3">Payload</th>
+     </tr>
+     <tr>
+       <td>1</td>
+       <td>username1</td>
+       <td>file1</td>
+       <td>ClamAV</td>
+       <td>11:00</td>
+       <td>11:05</td>
+       <td>5 mins</td>
+       <td>pass</td>
+       <td>payload1</td>
+     </tr>
+     <tr>
+       <td>2</td>
+       <td>username2</td>
+       <td>file2</td>
+       <td>ClamAV</td>
+       <td>11:30</td>
+       <td>11:45</td>
+       <td>15 mins</td>
+       <td>pass</td>
+       <td>payload2</td>
+     </tr>
+     <tr>
+       <td>3</td>
+       <td>username3</td>
+       <td>file3</td>
+       <td>ClamAV</td>
+       <td>11:40</td>
+       <td>11:06</td>
+       <td>6 mins</td>
+       <td>pass</td>
+       <td>payload3</td>
+     </tr>
+   </table>
+ </div>
+</article>
+
+<script>
+function move() {
+  var elem = document.getElementById("progressBar");
+  var width = 0;
+  var id = setInterval(frame, 10);
+  function frame() {
+    if (width >= 100) {
+      clearInterval(id);
+    } else {
+      width++;
+      elem.style.width = width + '%';
+      document.getElementById("label").innerHTML = width * 1  + '%';
+    }
+  }
+}
+</script>
+
+</body>
+</html>

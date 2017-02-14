@@ -1,6 +1,7 @@
 var xml2js = require('xml2js');
 var fs = require('fs');
 var commonConfig = require(appRoot + '/config/commonConfig.json');
+var logger = require(appRoot + '/js/util/winstonConfig.js');
 
 var treatmentCatalogue = function (callback) {
     convertXMLToJSON(commonConfig.treatmentCatalogueXMLFile, function(err, data) {
@@ -18,13 +19,13 @@ function convertXMLToJSON (file, callback) {
     fs.readFile(file, function(err, data) {
       if (err) {
         // File doesn't exist or something.
-        console.log('Error: ' + file);
+        logger.error('Error: ' + file);
         callback(err);
       } else {
         parser.parseString(data, function (err, result) {
           if (err) {
             // Error in parsing.
-            console.log('Error: ' + file);
+            logger.error('Error: ' + file);
             callback(err);
           } else {
             callback(null, result);
@@ -39,14 +40,13 @@ var treatmentVMDetails = function  (treatmentName, treatmentVersion, callback) {
     treatmentCatalogue (function (data) {
       var treatment = data.TreatmentCatalogue.Treatment;
       for (var i = 0; i < treatment.length; i++){
-        console.log(treatment[i].Name + ',' + treatment[i].Version);
           if((treatmentName === treatment[i].Name) && (treatmentVersion === treatment[i].Version)) {
             result.push({name:  treatment[i].Name,
                         version:  treatment[i].Version,
                         templateName:  treatment[i].Configuration.TemplateName});
           }
       }
-      console.log(result);
+      logger.debug(result);
       callback(result);
   });
 };

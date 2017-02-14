@@ -1,0 +1,122 @@
+body {
+  height: 100%;
+}
+
+div.container {
+    width: 100%;
+
+}
+
+header {
+  color: white;
+  background-color: black;
+  padding: 1em;
+  text-align: center;
+}
+
+
+footer {
+    padding: 1em;
+    color: white;
+    background-color: transparent;
+    text-align: center;
+    clear:right;
+}
+
+nav {
+    float: left;
+    max-width: 40%;
+    margin: 0;
+    padding: 1em;
+    border-right: 1px solid gray;
+height: 800px;
+text-align: center;
+
+}
+nav p {
+  padding: 0px;
+  margin: 0px;
+}
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul a {
+    text-decoration: none;
+}
+
+article {
+    margin-left: 10%;
+    padding: 1em;
+    overflow: hidden;
+    height: 100%;
+}
+
+button {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+.test-btn {
+  float: right;
+}
+
+ul.options {
+    list-style-type: none;
+    width: 15em;
+    margin: 0.3em 0;
+    padding: 0;
+}
+
+ul.options li {
+    background: #def url(cross_bright.png) no-repeat 98% center;
+    margin: 1px;
+    padding: 0.1em 0.3em;
+    cursor: pointer;
+    color: #46a;
+    font-weight: bold;
+    border: solid 1px #cde;
+}
+
+table {
+    width:100%;
+
+}
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 5px;
+    text-align: center;
+}
+th {  text-align: center;}
+
+table tr:nth-child(even) {
+    background-color: #eee;
+}
+table tr:nth-child(odd) {
+   background-color:#fff;
+}
+table th {
+    background-color: black;
+    color: white;
+}
+
+#myProgress {width: 100%;
+text-align: right;
+background-color:  transparent ;
+color: white;}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background-color: #134b81;
+}
+
+.filesRunning {
+  font-size: 50px;
+}
