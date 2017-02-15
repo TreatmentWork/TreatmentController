@@ -3,16 +3,15 @@ var bodyParser = require("body-parser");
 var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
 
-var  doSingleClamTreatment = function  (postData, callback) {
-  doClamTreatment(postData, clamTAConfig.singleScanEP, callback);
+var  doSingleClamTreatment = function  (host, postData, callback) {
+  doClamTreatment(host, postData, clamTAConfig.singleScanEP, callback);
 };
 
-var  doMultipleClamTreatment = function  (postData, callback) {
-  doClamTreatment(postData, clamTAConfig.multiScanEP, callback);
+var  doMultipleClamTreatment = function  (host, postData, callback) {
+  doClamTreatment(host, postData, clamTAConfig.multiScanEP, callback);
 };
 
-var  doClamTreatment = function  (postData, endpoint, callback) {
-  var host = clamTAConfig.host;
+var  doClamTreatment = function  (host, postData, endpoint, callback) {
   var port = clamTAConfig.port;
   var method = 'POST';
 

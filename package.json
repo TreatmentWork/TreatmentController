@@ -14,12 +14,18 @@
     "url": "git@github.com"
   },
   "dependencies": {
-    "express": ">=4.14.0",
-    "body-parser": ">=1.16.0",
+    "express": "^4.14.0",
+    "body-parser": "^1.16.0",
  	  "xml2js": "0.4.17",
     "d3": "^4.5.0",
     "d3-scale": "^1.0.4" ,
-    "winston": ">=2.3.1"
+    "winston": "2.3.1",
+    "async": "^1.5.0",
+    "expand-tilde" : "2.0.2",
+    "ms-rest-azure": "^1.15.0",
+    "azure-arm-resource": "1.5.1-preview",
+    "azure-arm-network": "0.16.2",
+    "azure-arm-compute": "0.19.1"
   },
   "keywords": [
     "Treatment"

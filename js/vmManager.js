@@ -1,0 +1,351 @@
+/*
+ * ------------------------------------------------------------------------------------------------
+ * IBM - Treatments Prototype - Create Azure VM from Template
+ * ------------------------------------------------------------------------------------------------
+ */
+//'use strict';
+
+var fs = require('fs');
+var path = require('path');
+var util = require('util');
+var async = require('async');
+var expandTilde = require('expand-tilde');
+var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
+// Import Azure SDK
+var msRestAzure = require('ms-rest-azure');
+var NetworkManagementClient = require('azure-arm-network');
+var ComputeManagementClient	= require('azure-arm-compute');
+
+// Validate environment variables and command line arguments
+_validateEnvironmentVariables();
+
+var createVM = function (treatmentName, cb) {
+  var networkClient;
+  var computeClient;
+  // Generate a Unique VM name from the Treatment name
+  var vmName 	= _generateVMId(treatmentName + "-vm-", []);
+  var randonVMNameId = _generateRandomId(vmName + 'VHD', []);
+
+  var vmDetails = { vmName : vmName,
+                   randonVMNameId : randonVMNameId,
+                   vhdTemplateImage : 'https://' + clamTAConfig.storageAccountId + '.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/TreatmentsVHDPrefix-osDisk.c4a08c49-571c-4b2e-a43c-da8849dc813f.vhd', // The VM Template VHD Image (this is the VHD output from the Azure CLI VM Capture process)
+                   publicIPName : vmName + "-ip",
+                   networkInterfaceName : vmName + "-nic",
+                   vhdTargetName : vmName + "-vhd",
+                   vhdTargetDisk : 'https://' + clamTAConfig.storageAccountId + '.blob.core.windows.net/vmcontainerb8a802e4-e2c0-4c8e-ac7c-35f0ebe183a0/osDisk.' + randonVMNameId + '.vhd',
+                   clientId : clamTAConfig.clientId,
+                   domain : clamTAConfig.domainId,
+                   secret : clamTAConfig.applicationSecret,
+                   subscriptionId : clamTAConfig.azureSubscriptionId,
+                   sshPublicKeyPath	: clamTAConfig.sshPublicKey,
+                   storageAccountId : clamTAConfig.storageAccountId,
+                   location : clamTAConfig.resourceGroupLocation,
+                   resourceGroupName : clamTAConfig.resourceGroupName,
+                   resourceGroupVNet : clamTAConfig.resourceGroupVNet,
+                   resourceGroupSubnet : clamTAConfig.resourceGroupSubnet,
+                   resourceGroupSecurity : clamTAConfig.resourceGroupNSG
+                 };
+
+      msRestAzure.loginWithServicePrincipalSecret(vmDetails.clientId, vmDetails.secret, vmDetails.domain, function (err, credentials) {
+    	console.log('\n\n======================================');
+    	console.log('\nTreatments Agent - VM Clone Management');
+    	console.log('\n======================================\n');
+
+    	if (err) return console.log(err);
+
+    	// Setup Azure client helps to our subscription / account
+    	networkClient  = new NetworkManagementClient( credentials, vmDetails.subscriptionId);
+    	computeClient  = new ComputeManagementClient( credentials, vmDetails.subscriptionId);
+    	// Synchronous Series of events
+    	async.series([
+    		function (callback) {
+    		  // Create the PublicIP network element
+    		  createPublicIP(vmDetails, networkClient, function (err, result, request, response) {
+    			if (err) {
+    			  return callback(err);
+    			}
+    			   callback(null);
+    		  });
+    		},
+
+    		function (callback) {
+    		  // Create the Network Interface(NIC) network element
+    		  createNetworkInterface(vmDetails, networkClient, function (err, result, request, response) {
+    			if (err) {
+    			  return callback(err);
+    			}
+    			callback(null);
+    		  });
+    		},
+
+    		function (callback) {
+    		  //  Create VM
+    		  cloneVM(vmDetails, computeClient, function (err, result, request, response) {
+    			if (err) {
+    			  return callback(err);
+    			}
+    			callback(null, vmDetails.vmName);
+    		  });
+    		},
+
+    		function (callback) {
+          // Get public IP
+    		  networkClient.publicIPAddresses.get(vmDetails.resourceGroupName, vmDetails.publicIPName, function (err, result) {
+    			if (err) {
+    			  callback(err);
+    			} else {
+    			  callback(null, result.ipAddress);
+    			}
+    		  });
+    		}
+    	],
+    	 function (err, results) {
+      		if (err) {
+      		    console.log(util.format('\nError occurred:\n%s',
+      			  util.inspect(err, { depth: null })));
+              cb(err);
+      		} else {
+              cb(null, results[2], results[3]);
+      		}
+    	   }
+    	);
+    });
+};
+
+// Helper: Create Public IP for VM
+function createPublicIP(vmDetails, networkClient, callback) {
+    var networkParameters = { "location": vmDetails.location,
+  							              "publicIPAllocationMethod": "Dynamic" };
+
+    console.log('Creating Public IP: ' + vmDetails.publicIPName);
+    return networkClient.publicIPAddresses.createOrUpdate(vmDetails.resourceGroupName, vmDetails.publicIPName, networkParameters, callback);
+}
+
+// Helper: Create Network Inteface for VM
+function createNetworkInterface(vmDetails, networkClient, callback) {
+  var networkParameters = 	{ "location": vmDetails.location,
+								"ipConfigurations": [{
+									"publicIPAddress" : {
+										"id": "/subscriptions/" + vmDetails.subscriptionId + "/resourceGroups/" + vmDetails.resourceGroupName + "/providers/Microsoft.Network/publicIPAddresses/" + vmDetails.publicIPName
+									},
+									"name": vmDetails.publicIPName,
+									"subnet": {
+										"id": "/subscriptions/" + vmDetails.subscriptionId + "/resourceGroups/" + vmDetails.resourceGroupName + "/providers/Microsoft.Network/virtualNetworks/" + vmDetails.resourceGroupVNet + "/subnets/" + vmDetails.resourceGroupSubnet
+									}
+								}],
+								"networkSecurityGroup": {
+									"id": "/subscriptions/" + vmDetails.subscriptionId + "/resourceGroups/" + vmDetails.resourceGroupName + "/providers/Microsoft.Network/networkSecurityGroups/" + vmDetails.resourceGroupSecurity
+								}
+							};
+
+    console.log('Creating Network Interface: ' + vmDetails.networkInterfaceName);
+    return networkClient.networkInterfaces.createOrUpdate(vmDetails.resourceGroupName, vmDetails.networkInterfaceName, networkParameters, callback);
+}
+
+
+
+// Helper: Create VM from VHD Image
+function cloneVM(vmDetails, computeClient, callback) {
+  console.log('Create Clone VM: ' + vmDetails.vmName);
+  var publicSSHKey = fs.readFileSync(expandTilde(vmDetails.sshPublicKeyPath), 'utf8');
+  var vmParameters = 	{ 	"location": vmDetails.location,
+							"hardwareProfile": {
+									"vmSize": "Standard_A1"
+							},
+							"storageProfile": {
+									"osDisk": {
+											"osType": "Linux",
+											"createOption": "fromImage",
+											"caching": "ReadWrite",
+											"name": vmDetails.vhdTargetName,
+											"image": {
+											  "uri": vmDetails.vhdTemplateImage
+											},
+											"vhd": {
+											  "uri": vmDetails.vhdTargetDisk
+											}
+									}
+							},
+							"networkProfile": {
+									"networkInterfaces": [{
+										"id": "/subscriptions/"+ vmDetails.subscriptionId + "/resourceGroups/" + vmDetails.resourceGroupName + "/providers/Microsoft.Network/networkInterfaces/" + vmDetails.networkInterfaceName,
+									}]
+							},
+							"osProfile": {
+									"computerName": vmDetails.vmName,
+									"adminUsername": "TreatAdmin",
+									"adminPassword": "Virtual*Secret12",
+									"linuxConfiguration": {
+
+										"ssh": vmDetails.publicSSHKey
+									}
+							},
+
+						};
+
+  return computeClient.virtualMachines.createOrUpdate(vmDetails.resourceGroupName, vmDetails.vmName, vmParameters, callback);
+}
+
+var destroyVM = function (vmName, cb) {
+  // Azure Management Interface object helpers
+  var networkClient;
+  var computeClient;
+  var vmDetails = { vmName : vmName,
+                   publicIPName : vmName + "-ip",
+                   networkInterfaceName : vmName + "-nic",
+                   clientId : clamTAConfig.clientId,
+                   domain : clamTAConfig.domainId,
+                   secret : clamTAConfig.applicationSecret,
+                   subscriptionId : clamTAConfig.azureSubscriptionId,
+                   location : clamTAConfig.resourceGroupLocation,
+                   resourceGroupName : clamTAConfig.resourceGroupName,
+                   resourceGroupVNet : clamTAConfig.resourceGroupVNet,
+                   resourceGroupSubnet : clamTAConfig.resourceGroupSubnet
+                 };
+
+      msRestAzure.loginWithServicePrincipalSecret(vmDetails.clientId, vmDetails.secret, vmDetails.domain, function (err, credentials) {
+    	console.log('\n\n======================================');
+    	console.log('\nTreatments Agent - VM Clone Management');
+    	console.log('\n======================================\n');
+
+    	if (err) return console.log(err);
+
+    	// Setup Azure client helps to our subscription / account
+    	networkClient  = new NetworkManagementClient( credentials, vmDetails.subscriptionId);
+    	computeClient  = new ComputeManagementClient( credentials, vmDetails.subscriptionId);
+      	// Synchronous Series of events
+      	async.series([
+      		function (callback) {
+      		  // Create the PublicIP network element
+      		  deleteVM(vmDetails, computeClient, function (err, result, request, response) {
+      			if (err) {
+      			  return callback(err);
+      			}
+      			   callback(null);
+      		  });
+      		},
+
+      		function (callback) {
+      		  // Create the Network Interface(NIC) network element
+      		  deleteNetworkInterface(vmDetails, networkClient, function (err, result, request, response) {
+      			if (err) {
+      			  return callback(err);
+      			}
+      			callback(null);
+      		  });
+      		},
+
+      		function (callback) {
+      		  //  Create VM
+      		  deletePublicIP(vmDetails, networkClient, function (err, result, request, response) {
+      			if (err) {
+      			  return callback(err);
+      			}
+      			callback(null);
+      		  });
+      		}
+      	],
+      	 function (err, results) {
+        		if (err) {
+        		    console.log(util.format('\nError occurred:\n%s',
+        			  util.inspect(err, { depth: null })));
+                cb(err);
+        		} else {
+                console.log("deletion of VM sucessful");
+                cb(null);
+        		}
+      	   }
+      	);
+      });
+  };
+
+
+
+
+// Helper: Create Public IP for VM
+function deleteVM(vmDetails, computeClient, callback) {
+
+  console.log('Delete Clone VM: ' + vmDetails.vmName);
+  return computeClient.virtualMachines.deleteMethod(vmDetails.resourceGroupName,
+                                                             vmDetails.vmName,
+                                                             "",
+                                                             callback);
+}
+
+
+// Helper: Delete NIC for VM
+function deleteNetworkInterface(vmDetails, networkClient, callback) {
+
+  var networkParameters = 	{ "location": vmDetails.location,
+								"ipConfigurations": [{
+
+									"publicIPAddress" : {
+										"id": "/subscriptions/" + vmDetails.subscriptionId + "/resourceGroups/" + vmDetails.resourceGroupName + "/providers/Microsoft.Network/publicIPAddresses/" + vmDetails.publicIPName
+									},
+									"name": vmDetails.publicIPName,
+									"subnet": {
+										"id": "/subscriptions/" + vmDetails.subscriptionId + "/resourceGroups/" + vmDetails.resourceGroupName + "/providers/Microsoft.Network/virtualNetworks/" + vmDetails.resourceGroupVNet + "/subnets/" + vmDetails.resourceGroupSubnet
+									}
+								}]
+							};
+
+    console.log('Delete Network Interface: ' + vmDetails.networkInterfaceName);
+    return networkClient.networkInterfaces.deleteMethod(vmDetails.resourceGroupName, vmDetails.networkInterfaceName, networkParameters, callback);
+}
+
+
+// Helper: Delete Public IP for VM
+function deletePublicIP(vmDetails, networkClient, callback) {
+    var networkParameters = 	{ "location": vmDetails.location };
+    console.log('Delete Public IP: ' + vmDetails.publicIPName);
+    return networkClient.publicIPAddresses.deleteMethod(vmDetails.resourceGroupName, vmDetails.publicIPName, networkParameters, callback);
+}
+
+
+function _generateRandomId(prefix, currentList) {
+    var newNumber;
+    while (true) {
+      newNumber = prefix + Math.floor(Math.random() * 10000);
+      if (!currentList || currentList.indexOf(newNumber) === -1) {
+        break;
+      }
+    }
+    return newNumber;
+}
+
+function _generateVMId(prefix, currentVMList) {
+  var newVMid;
+  while (true) {
+    newVMid = prefix + Math.floor(Math.random() * 100);
+    if (!currentVMList || currentVMList.indexOf(newVMid) === -1) {
+      break;
+    }
+  }
+  return newVMid;
+}
+
+
+// validation of parameters
+function _validateEnvironmentVariables() {
+    var config = [];
+    if (! clamTAConfig.clientId) config.push('clientId');
+    if (! clamTAConfig.domainId) config.push('domainId');
+    if (! clamTAConfig.applicationSecret) config.push('applicationSecret');
+    if (! clamTAConfig.azureSubscriptionId) config.push('azureSubscriptionId');
+    if (! clamTAConfig.sshPublicKey) config.push('sshPublicKey');
+    if (! clamTAConfig.storageAccountId) config.push('storageAccountId');
+    if (! clamTAConfig.resourceGroupLocation) config.push('resourceGroupLocation');
+    if (! clamTAConfig.resourceGroupName) config.push('resourceGroupName');
+    if (! clamTAConfig.resourceGroupVNet) config.push('resourceGroupVNet');
+    if (! clamTAConfig.resourceGroupSubnet) config.push('resourceGroupSubnet');
+    if (! clamTAConfig.resourceGroupNSG) config.push('resourceGroupNSG');
+
+    if (config.length > 0) {
+      throw new Error(util.format('please set the following environment variables: %s', config.toString()));
+    }
+}
+
+module.exports = {
+    createVM : createVM,
+    destroyVM : destroyVM
+};
