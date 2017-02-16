@@ -5,6 +5,7 @@ var bodyParser = require("body-parser");
 var clamTreatment = require('./clamAvTreatment.js');
 var treatmentCatalogue = require('./treatmentCatalogue.js');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
+var commonConfig = require(appRoot + '/config/commonConfig.json');
 var vmProcessoer = require('./vmManager.js');
 var viewLocation= appRoot + '/view';
 
@@ -34,30 +35,40 @@ app.post('/showTreatments/do', function (req, res) {
 });
 
 app.post('/treatment/do/clamAV/singlescan', function (req, res) {
-  treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, function (data) {
-    if(data.length === 1) {
-        vmProcessoer.createVM(req.body.TreatmentType, function (err, vmName, ipAddress) {
-        if (err) {
-            logger.error('Error: ' + err);
-        } else {
-          logger.debug('VM Name:' + vmName + ' with IP ' + ipAddress + ' created sucessfully');
-            var postData = JSON.stringify({  scanFile: req.body.scanFile  });
-            clamTreatment.doSingleClamTreatment(ipAddress, postData, function(data){
-              logger.info('Result:' + data);
-              res.send('<pre>'+ data + '</pre>');
-              // Now destroy the VM
-              vmProcessoer.destroyVM(vmName, function (err, result) {
-                if (err) {
-                    logger.error('Error: ' + err);
-                } else {
-                    logger.info('Deletion of VM ' + vmName + ' sucessful');
-                  }
-              });
-          });
-        }
-      });
+  treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, function (treatments) {
+    if(treatments.length >= 1) {
+      var treatmentVMs = commonConfig.treatmentVMs;
+      logger.debug('Supported Treatment VMs are:' + treatmentVMs);
+      for (var i = 0; i < treatments.length; i++) {
+          for (var j = 0; j < treatmentVMs.length; j++) {
+              if( (treatments[i].name === treatmentVMs[j].name) && (treatments[i].version === treatmentVMs[j].version)) {
+                  vmProcessoer.createVM(treatments[i].name, function (err, vmName, ipAddress) {
+                    if (err) {
+                        logger.error('Error: ' + err);
+                    } else {
+                      logger.debug('VM Name:' + vmName + ' with IP ' + ipAddress + ' created sucessfully');
+                        var postData = JSON.stringify({  scanFile: req.body.scanFile  });
+                        clamTreatment.doSingleClamTreatment(ipAddress, postData, function(data){
+                          logger.info('Result:' + data);
+                          res.send('<pre>'+ data + '</pre>');
+                          // Now destroy the VM
+                          vmProcessoer.destroyVM(vmName, function (err, result) {
+                            if (err) {
+                                logger.error('Error: ' + err);
+                            } else {
+                                logger.info('Deletion of VM ' + vmName + ' sucessful');
+                              }
+                          });
+                      });
+                    }
+                });
+              } else {
+                logger.info('Presently Treatment VM for  Treatment Name:' + treatments[i].name + ' Treatment VM:' + treatments[i].version + ' is not supported');
+              }
+          }
+      }
     } else {
-        var err = 'Unsupported Treatment: ' + req.body.TreatmentType + ', Version' + req.body.Version;
+        var err = 'None of the Treatments: ' + req.body.TreatmentType + ', and Version: ' + req.body.Version + ' are listed in Treatment Catalogue';
         logger.error(err);
         res.send(err);
     }

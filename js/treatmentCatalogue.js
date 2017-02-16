@@ -13,6 +13,33 @@ var treatmentCatalogue = function (callback) {
   });
 };
 
+var treatmentVMDetails = function  (treatmentNames, treatmentVersions, callback) {
+    var result = [];
+    // logger.debug('The user specified treatments :' + JSON.stringify(treatmentNames) + ' and version :' + JSON.stringify(treatmentVersions));
+    // var treatmentNamesInput = JSON.stringify(treatmentNames).split(',');
+    logger.debug('type treatmentNames:' + (typeof treatmentNames));
+    logger.debug('type treatmentVersions:' + (typeof treatmentVersions));
+    logger.debug('The user specified treatments :' + treatmentNames + ' and version :' + treatmentVersions);
+    var treatmentNamesInput = treatmentNames.split(',');
+    var treatmentVersionsInput = treatmentVersions.split(',');
+    treatmentCatalogue (function (data) {
+      var treatments = data.TreatmentCatalogue.Treatment;
+      for (var i = 0; i < treatments.length; i++) {
+        for (var j = 0; j < treatmentNamesInput.length; j++) {
+          logger.debug(treatmentNamesInput[j] + ', ' + treatments[i].Name);
+          logger.debug(treatmentVersionsInput[j] + ', ' + treatments[i].Version);
+          if((treatmentNamesInput[j] === treatments[i].Name) && (treatmentVersionsInput[j] === treatments[i].Version)) {
+              result.push({name:  treatments[i].Name,
+                          version:  treatments[i].Version,
+                          templateName:  treatments[i].Configuration.TemplateName});
+          }
+        }
+      }
+      logger.debug('The matching treatments found in the Treatment Catalogue:' + result);
+      callback(result);
+  });
+};
+
 function convertXMLToJSON (file, callback) {
   var parser = new xml2js.Parser({explicitArray : false}); // Creating XML to JSON parser object
   // Reading and Parsing the file
@@ -34,22 +61,6 @@ function convertXMLToJSON (file, callback) {
     }
   });
 }
-
-var treatmentVMDetails = function  (treatmentName, treatmentVersion, callback) {
-    var result = [];
-    treatmentCatalogue (function (data) {
-      var treatment = data.TreatmentCatalogue.Treatment;
-      for (var i = 0; i < treatment.length; i++){
-          if((treatmentName === treatment[i].Name) && (treatmentVersion === treatment[i].Version)) {
-            result.push({name:  treatment[i].Name,
-                        version:  treatment[i].Version,
-                        templateName:  treatment[i].Configuration.TemplateName});
-          }
-      }
-      logger.debug(result);
-      callback(result);
-  });
-};
 
 module.exports = {
     getTreatmentCatalogue : treatmentCatalogue,
