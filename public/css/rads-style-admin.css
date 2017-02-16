@@ -120,3 +120,37 @@ color: white;}
 .filesRunning {
   font-size: 50px;
 }
+.menu-bar {
+  text-align: center;
+  background-color: black;
+
+}
+.menu-bar ul {
+    list-style-type: none;
+
+    overflow: hidden;
+    background-color: black;
+    display:table;
+margin: 0 auto;
+padding: 0;
+}
+
+.menu-bar li {
+    float: left;
+}
+
+.menu-bar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.menu-bar li a:hover:not(.active) {
+    background-color: #333;
+}
+
+.active {
+    background-color: rgba(215, 233, 255, 0.5);
+}

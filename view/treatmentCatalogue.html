@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<style>
+
+path {
+  stroke: #fff;
+  fill-rule: evenodd;
+}
+
+text {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+</style>
+<head>
+  <meta charset="utf-8" />
+  <script type="text/JavaScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <!-- <script type="text/javascript" src="test.json"></script> -->
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.10.1.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+  <script src=”jquery-latest.pack.js” type=”text/javascript”></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+
+  <link rel="stylesheet" href="css/rads-style-catalogue.css">
+
+  <title></title>
+</head>
+<body>
+  <header>
+    <h1>RADS prototype</h1>
+  </header>
+  <div class="menu-bar">
+    <ul>
+    <li><a  href="singleTreatment">Run Treatment</a></li>
+    <li><a href="treatmentCatalogue" class="active">View Catalogue</a></li>
+    <li><a href="admin">Submitted treatments</a></li>
+  </ul>
+</div>
+
+
+  <div class="container">
+
+<article>
+  <div id="selectedInfo">
+<table>
+  <tr><td class="title"><p>Treatment Name:</p></td><td><p id="selectedTreatment"></p></td></tr>
+  <tr><td class="title"><p>Description:</p></td><td><p id="treatmentDescription"></p></td></tr>
+  <tr><td class="title"><p>Versions Available:</p></td><td><p id="versionDescription"></p></td></tr>
+  <tr><td class="title"><p>Date Created:</p></td><td><p id="createDateDescription"></p></td></tr>
+  <tr><td class="title"><p>Status:</p></td><td><p id="statusDescription"></p></td></tr>
+</table>
+</div>
+
+
+  <div class="svg-section">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+    //d3 code
+    var width = 960,
+    height = 700,
+    radius = Math.min(width, height) / 2;
+
+    var x = d3.scale.linear()
+    .range([0, 2 * Math.PI]);
+
+    var y = d3.scale.linear()
+    .range([0, radius]);
+
+    var color = d3.scale.category20c();
+
+    var svg = d3.select(".svg-section")
+    // .classed("svg-container", true) //container class to make it responsive
+    .append("svg")
+    // .attr("width", width)
+    // .attr("height", height)
+    // .attr("viewBox", "0 0 " + width + " " + height )
+    .attr("viewBox", "0 0 860 900")
+    .attr("preserveAspectRatio", "xMinYMin")
+    .classed("svg-content", true)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+
+    var partition = d3.layout.partition()
+    .value(function(d) { return d.size; });
+
+    var arc = d3.svg.arc()
+    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+    .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+    .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+
+    d3.json("flare.json", function(error, root) {
+      var g = svg.selectAll("g")
+      .data(partition.nodes(root))
+      .enter().append("g");
+
+      var path = g.append("path")
+      .attr("d", arc)
+      .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+      .on("click", click);
+
+      var text = g.append("text")
+      .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
+      .attr("x", function(d) { return y(d.y); })
+      .attr("dx", "6") // margin
+      .attr("dy", ".35em") // vertical-align
+      .text(function(d) { return d.name; });
+
+      var chosenTreat;
+      function click(d) {
+        // fade out all text elements
+        text.transition().attr("opacity", 0);
+
+        path.transition()
+        .duration(750)
+        .attrTween("d", arcTween(d))
+        .each("end", function(e, i) {
+          // check if the animated element's data e lies within the visible angle span given in d
+          if (e.x >= d.x && e.x < (d.x + d.dx)) {
+            // get a selection of the associated text element
+            var arcText = d3.select(this.parentNode).select("text");
+            // fade in the text element and recalculate positions
+            arcText.transition().duration(750)
+            .attr("opacity", 1)
+            .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
+            .attr("x", function(d) { return y(d.y);
+            });
+          var chosenTreat = d3.select(this.parentNode).text();
+          console.log(chosenTreat);
+          document.getElementById("selectedTreatment").innerHTML = chosenTreat;
+          var addCSS = document.getElementById("selectedInfo");
+          addCSS.setAttribute("class","selectedInfo");
+        }
+        });
+      }
+    });
+
+    d3.select(self.frameElement).style("height", height + "px");
+
+    // Interpolate the scales!
+    function arcTween(d) {
+      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+      yd = d3.interpolate(y.domain(), [d.y, 1]),
+      yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+      return function(d, i) {
+        return i
+        ? function(t) { return arc(d); }
+        : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+      };
+    }
+
+    function computeTextRotation(d) {
+      return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+    }
+    </script>
+  </div>
+</article>
+
+  </div>
+
+
+
+
+
+
+<script>
+//load in treatment versions and description
+var treatmentInfo;
+function readTextFile(file, callback) {
+  var rawFile = new XMLHttpRequest();
+  rawFile.overrideMimeType("application/json");
+  rawFile.open("GET", file, true);
+  rawFile.onreadystatechange = function() {
+    if (rawFile.readyState === 4 && rawFile.status == "200") {
+      callback(rawFile.responseText);
+    }
+  }
+  rawFile.send(null);
+}
+readTextFile("treatmentInfo.json", function(infotext){
+  treatmentInfo = JSON.parse(infotext);
+});
+//populate version dropdown
+function showTreatmentDetails() {
+  var treatname = document.getElementById('selectedTreatment').textContent;
+  var description = ".Description"
+  var lookupDescription = treatname + description;
+  var version = ".Version"
+  var lookupVersion = treatname + version;
+  var createdate = ".CreateDate"
+  var lookupCreateDate = treatname + createdate;
+  var status = ".Status"
+  var lookupStatus = treatname + status;
+
+  Object.byString = function(o, s) {
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, '');           // strip a leading dot
+    var a = s.split('.');
+    for (var i = 0, n = a.length; i < n; ++i) {
+      var k = a[i];
+      if (k in o) {
+        o = o[k];
+      } else {
+        return;
+      }
+    }
+    return o;
+  }
+
+  var descriptionText = Object.byString(treatmentInfo, lookupDescription);
+  var versionText = Object.byString(treatmentInfo, lookupVersion);
+  var createdateText = Object.byString(treatmentInfo, lookupCreateDate);
+  var statusText = Object.byString(treatmentInfo, lookupStatus);
+
+  document.getElementById("treatmentDescription").innerHTML = descriptionText;
+  if (document.getElementById("treatmentDescription").innerHTML == "undefined"){
+    document.getElementById("treatmentDescription").innerHTML = "";
+  }
+  document.getElementById("versionDescription").innerHTML = versionText;
+  if (document.getElementById("versionDescription").innerHTML == "undefined"){
+    document.getElementById("versionDescription").innerHTML = "";
+  }
+  document.getElementById("createDateDescription").innerHTML = createdateText;
+  if (document.getElementById("createDateDescription").innerHTML == "undefined"){
+    document.getElementById("createDateDescription").innerHTML = "";
+  }
+  document.getElementById("statusDescription").innerHTML = statusText;
+  if (document.getElementById("statusDescription").innerHTML == "undefined"){
+    document.getElementById("statusDescription").innerHTML = "";
+  }
+
+
+
+}
+
+
+
+
+
+  //watch for change in treatment selection on wheel
+  window.onload = function() {
+
+    var target = document.getElementById("selectedTreatment");
+
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        showTreatmentDetails()
+      });
+    });
+
+    var config = {
+      childList: true,
+      subtree: true,
+      characterData: true
+    };
+
+    observer.observe(target, config);
+  }
+
+</script>
+
+</body>
+</html>

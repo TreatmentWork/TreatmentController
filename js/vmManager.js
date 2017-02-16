@@ -10,40 +10,39 @@ var path = require('path');
 var util = require('util');
 var async = require('async');
 var expandTilde = require('expand-tilde');
-var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
+var logger = require(appRoot + '/js/util/winstonConfig.js');
 // Import Azure SDK
 var msRestAzure = require('ms-rest-azure');
 var NetworkManagementClient = require('azure-arm-network');
 var ComputeManagementClient	= require('azure-arm-compute');
 
-// Validate environment variables and command line arguments
-_validateEnvironmentVariables();
-
-var createVM = function (treatmentName, cb) {
+var createVM = function (treatmentName, configData, cb) {
+  // Validate environment variables and command line arguments
+  _validateEnvironmentVariables(configData);
   var networkClient;
   var computeClient;
   // Generate a Unique VM name from the Treatment name
   var vmName 	= _generateVMId(treatmentName + "-vm-", []);
   var randonVMNameId = _generateRandomId(vmName + 'VHD', []);
-
+  logger.debug("In createVM -> Config data:" + JSON.stringify(configData));
   var vmDetails = { vmName : vmName,
                    randonVMNameId : randonVMNameId,
-                   vhdTemplateImage : 'https://' + clamTAConfig.storageAccountId + '.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/TreatmentsVHDPrefix-osDisk.c4a08c49-571c-4b2e-a43c-da8849dc813f.vhd', // The VM Template VHD Image (this is the VHD output from the Azure CLI VM Capture process)
+                   vhdTemplateImage : 'https://' + configData.storageAccountId + '.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/' + configData.vhdName, // The VM Template VHD Image (this is the VHD output from the Azure CLI VM Capture process)
                    publicIPName : vmName + "-ip",
                    networkInterfaceName : vmName + "-nic",
                    vhdTargetName : vmName + "-vhd",
-                   vhdTargetDisk : 'https://' + clamTAConfig.storageAccountId + '.blob.core.windows.net/vmcontainerb8a802e4-e2c0-4c8e-ac7c-35f0ebe183a0/osDisk.' + randonVMNameId + '.vhd',
-                   clientId : clamTAConfig.clientId,
-                   domain : clamTAConfig.domainId,
-                   secret : clamTAConfig.applicationSecret,
-                   subscriptionId : clamTAConfig.azureSubscriptionId,
-                   sshPublicKeyPath	: clamTAConfig.sshPublicKey,
-                   storageAccountId : clamTAConfig.storageAccountId,
-                   location : clamTAConfig.resourceGroupLocation,
-                   resourceGroupName : clamTAConfig.resourceGroupName,
-                   resourceGroupVNet : clamTAConfig.resourceGroupVNet,
-                   resourceGroupSubnet : clamTAConfig.resourceGroupSubnet,
-                   resourceGroupSecurity : clamTAConfig.resourceGroupNSG
+                   vhdTargetDisk : 'https://' + configData.storageAccountId + '.blob.core.windows.net/vmcontainerb8a802e4-e2c0-4c8e-ac7c-35f0ebe183a0/osDisk.' + randonVMNameId + '.vhd',
+                   clientId : configData.clientId,
+                   domain : configData.domainId,
+                   secret : configData.applicationSecret,
+                   subscriptionId : configData.azureSubscriptionId,
+                   sshPublicKeyPath	: configData.sshPublicKey,
+                   storageAccountId : configData.storageAccountId,
+                   location : configData.resourceGroupLocation,
+                   resourceGroupName : configData.resourceGroupName,
+                   resourceGroupVNet : configData.resourceGroupVNet,
+                   resourceGroupSubnet : configData.resourceGroupSubnet,
+                   resourceGroupSecurity : configData.resourceGroupNSG
                  };
 
       msRestAzure.loginWithServicePrincipalSecret(vmDetails.clientId, vmDetails.secret, vmDetails.domain, function (err, credentials) {
@@ -60,7 +59,7 @@ var createVM = function (treatmentName, cb) {
     	async.series([
     		function (callback) {
     		  // Create the PublicIP network element
-    		  createPublicIP(vmDetails, networkClient, function (err, result, request, response) {
+    		  createPublicIP(vmDetails, networkClient, function (err, result) {
     			if (err) {
     			  return callback(err);
     			}
@@ -70,7 +69,7 @@ var createVM = function (treatmentName, cb) {
 
     		function (callback) {
     		  // Create the Network Interface(NIC) network element
-    		  createNetworkInterface(vmDetails, networkClient, function (err, result, request, response) {
+    		  createNetworkInterface(vmDetails, networkClient, function (err, result) {
     			if (err) {
     			  return callback(err);
     			}
@@ -80,7 +79,7 @@ var createVM = function (treatmentName, cb) {
 
     		function (callback) {
     		  //  Create VM
-    		  cloneVM(vmDetails, computeClient, function (err, result, request, response) {
+    		  cloneVM(vmDetails, computeClient, function (err, result) {
     			if (err) {
     			  return callback(err);
     			}
@@ -105,7 +104,7 @@ var createVM = function (treatmentName, cb) {
       			  util.inspect(err, { depth: null })));
               cb(err);
       		} else {
-              cb(null, results[2], results[3]);
+              cb(null, results[2], results[3], configData);
       		}
     	   }
     	);
@@ -186,21 +185,22 @@ function cloneVM(vmDetails, computeClient, callback) {
   return computeClient.virtualMachines.createOrUpdate(vmDetails.resourceGroupName, vmDetails.vmName, vmParameters, callback);
 }
 
-var destroyVM = function (vmName, cb) {
+var destroyVM = function (vmName, configData, cb) {
   // Azure Management Interface object helpers
   var networkClient;
   var computeClient;
+  logger.debug("In destroyVM -> Config data:" + JSON.stringify(configData));
   var vmDetails = { vmName : vmName,
                    publicIPName : vmName + "-ip",
                    networkInterfaceName : vmName + "-nic",
-                   clientId : clamTAConfig.clientId,
-                   domain : clamTAConfig.domainId,
-                   secret : clamTAConfig.applicationSecret,
-                   subscriptionId : clamTAConfig.azureSubscriptionId,
-                   location : clamTAConfig.resourceGroupLocation,
-                   resourceGroupName : clamTAConfig.resourceGroupName,
-                   resourceGroupVNet : clamTAConfig.resourceGroupVNet,
-                   resourceGroupSubnet : clamTAConfig.resourceGroupSubnet
+                   clientId : configData.clientId,
+                   domain : configData.domainId,
+                   secret : configData.applicationSecret,
+                   subscriptionId : configData.azureSubscriptionId,
+                   location : configData.resourceGroupLocation,
+                   resourceGroupName : configData.resourceGroupName,
+                   resourceGroupVNet : configData.resourceGroupVNet,
+                   resourceGroupSubnet : configData.resourceGroupSubnet
                  };
 
       msRestAzure.loginWithServicePrincipalSecret(vmDetails.clientId, vmDetails.secret, vmDetails.domain, function (err, credentials) {
@@ -217,7 +217,7 @@ var destroyVM = function (vmName, cb) {
       	async.series([
       		function (callback) {
       		  // Create the PublicIP network element
-      		  deleteVM(vmDetails, computeClient, function (err, result, request, response) {
+      		  deleteVM(vmDetails, computeClient, function (err, result) {
       			if (err) {
       			  return callback(err);
       			}
@@ -227,7 +227,7 @@ var destroyVM = function (vmName, cb) {
 
       		function (callback) {
       		  // Create the Network Interface(NIC) network element
-      		  deleteNetworkInterface(vmDetails, networkClient, function (err, result, request, response) {
+      		  deleteNetworkInterface(vmDetails, networkClient, function (err, result) {
       			if (err) {
       			  return callback(err);
       			}
@@ -237,7 +237,7 @@ var destroyVM = function (vmName, cb) {
 
       		function (callback) {
       		  //  Create VM
-      		  deletePublicIP(vmDetails, networkClient, function (err, result, request, response) {
+      		  deletePublicIP(vmDetails, networkClient, function (err, result) {
       			if (err) {
       			  return callback(err);
       			}
@@ -326,22 +326,22 @@ function _generateVMId(prefix, currentVMList) {
 
 
 // validation of parameters
-function _validateEnvironmentVariables() {
+function _validateEnvironmentVariables(configData) {
     var config = [];
-    if (! clamTAConfig.clientId) config.push('clientId');
-    if (! clamTAConfig.domainId) config.push('domainId');
-    if (! clamTAConfig.applicationSecret) config.push('applicationSecret');
-    if (! clamTAConfig.azureSubscriptionId) config.push('azureSubscriptionId');
-    if (! clamTAConfig.sshPublicKey) config.push('sshPublicKey');
-    if (! clamTAConfig.storageAccountId) config.push('storageAccountId');
-    if (! clamTAConfig.resourceGroupLocation) config.push('resourceGroupLocation');
-    if (! clamTAConfig.resourceGroupName) config.push('resourceGroupName');
-    if (! clamTAConfig.resourceGroupVNet) config.push('resourceGroupVNet');
-    if (! clamTAConfig.resourceGroupSubnet) config.push('resourceGroupSubnet');
-    if (! clamTAConfig.resourceGroupNSG) config.push('resourceGroupNSG');
+    if (! configData.clientId) config.push('clientId');
+    if (! configData.domainId) config.push('domainId');
+    if (! configData.applicationSecret) config.push('applicationSecret');
+    if (! configData.azureSubscriptionId) config.push('azureSubscriptionId');
+    if (! configData.sshPublicKey) config.push('sshPublicKey');
+    if (! configData.storageAccountId) config.push('storageAccountId');
+    if (! configData.resourceGroupLocation) config.push('resourceGroupLocation');
+    if (! configData.resourceGroupName) config.push('resourceGroupName');
+    if (! configData.resourceGroupVNet) config.push('resourceGroupVNet');
+    if (! configData.resourceGroupSubnet) config.push('resourceGroupSubnet');
+    if (! configData.resourceGroupNSG) config.push('resourceGroupNSG');
 
     if (config.length > 0) {
-      throw new Error(util.format('please set the following environment variables: %s', config.toString()));
+      throw new Error(util.format('The following config parameters is/are missing in Treatment Catalogue : %s', config.toString()));
     }
 }
 

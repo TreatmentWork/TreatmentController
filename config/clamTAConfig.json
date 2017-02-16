@@ -1,16 +1,5 @@
 {
     "port" : "8080",
     "singleScanEP" : "/clamAV/scan",
-    "multiScanEP" : "/clamAV/multiscan",
-    "azureSubscriptionId" : "5fa671fb-1380-4f1a-b92e-7cdd8e778417",
-    "clientId" : "ef6faa35-40f7-4872-807d-33ebe6afef3e",
-    "applicationSecret" : "CHNAGE_ME",
-    "domainId" : "786939a4-fe27-4dbd-b6fa-756384dd6edc",
-    "storageAccountId" : "treatmentssa18",
-    "sshPublicKey" : "./data/publicKey.key",
-    "resourceGroupLocation" : "ukwest",
-    "resourceGroupName" : "TreatmentsRG",
-    "resourceGroupVNet" : "TreatmentsVNet",
-    "resourceGroupSubnet" : "TreatmentsSubnet",
-    "resourceGroupNSG" : "TreatmentsNSG"
+    "multiScanEP" : "/clamAV/multiscan"
 }

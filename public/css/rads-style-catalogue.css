@@ -23,30 +23,12 @@ footer {
     clear:right;
 }
 
-nav {
-    float: left;
-    max-width: 40%;
-    margin: 0;
-    padding: 1em;
-    border-right: 1px solid gray;
-height: 100vh;
-}
 
-nav ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-nav ul a {
-    text-decoration: none;
-}
 
 article {
-    margin-left: 10%;
     padding: 1em;
     overflow: hidden;
     height: 100%;
-
 }
 
 button {
@@ -56,22 +38,6 @@ button {
   margin: 30px;
 }
 
-ul.options {
-    list-style-type: none;
-    width: 15em;
-    margin: 0.3em 0;
-    padding: 0;
-}
-
-ul.options li {
-    background: #def url(../images/cross_bright.png) no-repeat 98% center;
-    margin: 1px;
-    padding: 0.1em 0.3em;
-    cursor: pointer;
-    color: #46a;
-    font-weight: bold;
-    border: solid 1px #cde;
-}
 
 circle.child {
 pointer-events: all;
@@ -111,21 +77,21 @@ right: 0%;
 right: 0px;
 }
 
-.treatment-section {
+/*.treatment-section {
   width: 50%;
   float: left;
-}
+}*/
 
-.selected {
+/*.selected {
   display: flex;
-  width: 50%;
-}
-
+  width: 60%;
+}*/
+/*
 .selectedTreatment {
   float: left;
-}
+}*/
 
-.selectedVersion {
+/*.selectedVersion {
   margin-top: 6px;
   margin-left: 4px;
 }
@@ -136,25 +102,30 @@ right: 0px;
 }
 .submit-btn {
   margin-left: 17px;
-}
+}*/
 
-.selectedInfo {
-    margin-left: 10px;
+#selectedInfo {
+    margin-left: 2%;
     padding-left: 10px;
     padding-right: 10px;
-    border: solid 1px #000033;
-display: table-cell;
-background-color: rgba(215, 233, 255, 0.5);
-color: #46a;
+    width: 55%;
+    float: left;
+/*display: table-cell;*/
 }
 
+.title {
+  font-weight: bold;
+  width: 11%;
+}
+/*
 #selectedTreatment {
   font-weight: bold;
 
 }
 .hide {
   display: none;
-}
+}*/
+
 .menu-bar {
   text-align: center;
   background-color: black;
