@@ -189,7 +189,6 @@ var destroyVM = function (vmName, configData, cb) {
   // Azure Management Interface object helpers
   var networkClient;
   var computeClient;
-  logger.debug("In destroyVM -> Config data:" + JSON.stringify(configData));
   var vmDetails = { vmName : vmName,
                    publicIPName : vmName + "-ip",
                    networkInterfaceName : vmName + "-nic",

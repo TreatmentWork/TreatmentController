@@ -28,7 +28,7 @@
 		</Configuration>
 	</Treatment>
 	<Treatment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TreatmentCatalogue.xsd">
-		<Name>ClamAV1</Name>
+		<Name>ClamAV</Name>
 		<Version>1.2</Version>
 		<CreateDate>2001-12-17T09:30:47+05:00</CreateDate>
 		<Status>Active</Status>
@@ -40,18 +40,18 @@
 			<IsCustom>true</IsCustom>
 		</TrreatmentType>
 		<Configuration>
-			<azureSubscriptionId>5fa671fb-1380-4f1a-b92e-7cdd8e778417</azureSubscriptionId>
-			<clientId>ef6faa35-40f7-4872-807d-33ebe6afef3e</clientId>
-			<applicationSecret>ROuzKqyqGSZDwlhFJi3Cd0mrTdmqhPb4O2ZQRAlX58s=</applicationSecret>
-			<domainId>786939a4-fe27-4dbd-b6fa-756384dd6edc</domainId>
-			<storageAccountId>treatmentssa18</storageAccountId>
+			<azureSubscriptionId>a4ed96ec-5fd0-4d5d-87da-a7047a8595db</azureSubscriptionId>
+			<clientId>1029781a-7c4f-46dc-82c9-6dfbba6860cf</clientId>
+			<applicationSecret>30AJdIaNNdzkR9DnkoG8+s9qO1IaJn7+tkBnaR+c7Dk=</applicationSecret>
+			<domainId>e45da7cd-9f04-4f71-9321-1d9b2fa4dd5f</domainId>
+			<storageAccountId>treatmentssa19</storageAccountId>
 			<sshPublicKey>./data/publicKey.key</sshPublicKey>
 			<resourceGroupLocation>ukwest</resourceGroupLocation>
 			<resourceGroupName>TreatmentsRG</resourceGroupName>
 			<resourceGroupVNet>TreatmentsVNet</resourceGroupVNet>
 			<resourceGroupSubnet>TreatmentsSubnet</resourceGroupSubnet>
 			<resourceGroupNSG>TreatmentsNSG</resourceGroupNSG>
-			<vhdName>TreatmentsVHDPrefix-osDisk.c4a08c49-571c-4b2e-a43c-da8849dc813f.vhd</vhdName>
+			<vhdName>TreatmentsVHDPrefix-osDisk.71a10e71-e199-4e4a-b77c-dd7635970b43.vhd</vhdName>
 		</Configuration>
 	</Treatment>
 </TreatmentCatalogue>
