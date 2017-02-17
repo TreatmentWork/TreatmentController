@@ -43,6 +43,7 @@ app.post('/showTreatments/do', function (req, res) {
 });
 
 app.post('/treatment/do/clamAV/singlescan', function (req, res) {
+  logger.info('Treatment request received.');
   treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, function (treatments) {
     if(treatments.length >= 1) {
       var treatmentVMs = commonConfig.treatmentVMs;
@@ -50,6 +51,7 @@ app.post('/treatment/do/clamAV/singlescan', function (req, res) {
       for (var i = 0; i < treatments.length; i++) {
           for (var j = 0; j < treatmentVMs.length; j++) {
               if( (treatments[i].name === treatmentVMs[j].name) && (treatments[i].version === treatmentVMs[j].version)) {
+                  logger.info('VM creation started.');
                   vmProcessoer.createVM(treatments[i].name, treatments[i].configData, function (err, vmName, ipAddress, configData) {
                     if (err) {
                         logger.error('Error: ' + err);
@@ -59,12 +61,13 @@ app.post('/treatment/do/clamAV/singlescan', function (req, res) {
                         clamTreatment.doSingleClamTreatment(ipAddress, postData, function(data){
                           logger.info('Result:' + data);
                           res.send('<pre>'+ data + '</pre>');
+                          logger.debug('VM Name:' + vmName + ' with IP ' + ipAddress + ' deletion started');
                           // Now destroy the VM
                           vmProcessoer.destroyVM(vmName, configData, function (err, result) {
                             if (err) {
                                 logger.error('Error: ' + err);
                             } else {
-                                logger.info('Deletion of VM ' + vmName + ' successful');
+                                logger.info('VM Name:' + vmName +  ' deletion done.');
                               }
                           });
                       });

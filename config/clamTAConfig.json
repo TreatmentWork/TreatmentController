@@ -1,5 +1,8 @@
 {
     "port" : "8080",
     "singleScanEP" : "/clamAV/scan",
-    "multiScanEP" : "/clamAV/multiscan"
+    "multiScanEP" : "/clamAV/multiscan",
+    "adminUsername" : "TreatAdmin",
+    "adminPassword" : "Virtual*Secret12",
+    "timeout" : "240000"
 }

@@ -11,6 +11,7 @@ var util = require('util');
 var async = require('async');
 var expandTilde = require('expand-tilde');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
+var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
 // Import Azure SDK
 var msRestAzure = require('ms-rest-azure');
 var NetworkManagementClient = require('azure-arm-network');
@@ -24,7 +25,6 @@ var createVM = function (treatmentName, configData, cb) {
   // Generate a Unique VM name from the Treatment name
   var vmName 	= _generateVMId(treatmentName + "-vm-", []);
   var randonVMNameId = _generateRandomId(vmName + 'VHD', []);
-  logger.debug("In createVM -> Config data:" + JSON.stringify(configData));
   var vmDetails = { vmName : vmName,
                    randonVMNameId : randonVMNameId,
                    vhdTemplateImage : 'https://' + configData.storageAccountId + '.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/' + configData.vhdName, // The VM Template VHD Image (this is the VHD output from the Azure CLI VM Capture process)
@@ -172,8 +172,8 @@ function cloneVM(vmDetails, computeClient, callback) {
 							},
 							"osProfile": {
 									"computerName": vmDetails.vmName,
-									"adminUsername": "TreatAdmin",
-									"adminPassword": "Virtual*Secret12",
+									"adminUsername": clamTAConfig.adminUsername,
+									"adminPassword": clamTAConfig.adminPassword,
 									"linuxConfiguration": {
 
 										"ssh": vmDetails.publicSSHKey

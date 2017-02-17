@@ -41,6 +41,7 @@ var  doClamTreatment = function  (host, postData, endpoint, callback) {
     });
     // response end
     resHttp.on('end', function () {
+      logger.info('ClamAV treatment response received.');
       callback(result);
     });
     //response error
@@ -49,15 +50,27 @@ var  doClamTreatment = function  (host, postData, endpoint, callback) {
     });
   });
 
+  reqHttp.on('socket', function (socket) {
+      socket.setTimeout(parseInt(clamTAConfig.timeout));
+      socket.on('timeout', function() {
+          reqHttp.abort();
+      });
+  });
+
   // request error
   reqHttp.on('error', function (err) {
+    if (err.code === "ECONNRESET") {
+      logger.error('Timeout occured after ' + clamTAConfig.timeout + ' milliseconds. Error details: ' + err);
+    } else {
       logger.error(err);
+    }
   });
 
   //send request witht the postData form
   logger.debug('postData:' + postData);
   reqHttp.write(postData);
   reqHttp.end();
+  logger.info('ClamAV treatment request sent.');
 
 };
 
