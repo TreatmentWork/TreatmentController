@@ -4,5 +4,5 @@
     "multiScanEP" : "/clamAV/multiscan",
     "adminUsername" : "TreatAdmin",
     "adminPassword" : "Virtual*Secret12",
-    "timeout" : "240000"
+    "timeout" : "900000"
 }

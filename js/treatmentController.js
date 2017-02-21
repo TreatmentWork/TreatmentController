@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var http = require('http');
 var bodyParser = require("body-parser");
 var clamTreatment = require('./clamAvTreatment.js');
 var treatmentCatalogue = require('./treatmentCatalogue.js');
@@ -10,6 +9,7 @@ var vmProcessoer = require('./vmManager.js');
 var viewLocation= appRoot + '/view';
 
 app.use(express.static(appRoot + '/public'));
+app.use(express.static(appRoot + '/logs'));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,31 +43,31 @@ app.post('/showTreatments/do', function (req, res) {
 });
 
 app.post('/treatment/do/clamAV/singlescan', function (req, res) {
-  logger.info('Treatment request received.');
-  treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, function (treatments) {
+  var requestId = new Date().getTime() + ' : ';
+  logger.info(requestId + 'Treatment request received at /treatment/do/clamAV/singlescan');
+  treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, requestId, function (treatments) {
     if(treatments.length >= 1) {
       var treatmentVMs = commonConfig.treatmentVMs;
-      logger.debug('Supported Treatment VMs are:' + JSON.stringify(treatmentVMs));
+      logger.debug(requestId + 'Supported Treatment VMs are:' + JSON.stringify(treatmentVMs));
       for (var i = 0; i < treatments.length; i++) {
           for (var j = 0; j < treatmentVMs.length; j++) {
               if( (treatments[i].name === treatmentVMs[j].name) && (treatments[i].version === treatmentVMs[j].version)) {
-                  logger.info('VM creation started.');
-                  vmProcessoer.createVM(treatments[i].name, treatments[i].configData, function (err, vmName, ipAddress, configData) {
+                  logger.info(requestId + 'VM creation started.');
+                  vmProcessoer.createVM(treatments[i].name, treatments[i].configData, requestId, function (err, vmName, ipAddress, configData) {
                     if (err) {
-                        logger.error('Error: ' + err);
+                        logger.error(requestId + 'Error: ' + err);
                     } else {
-                      logger.debug('VM Name:' + vmName + ' with IP ' + ipAddress + ' created sucessfully');
-                        var postData = JSON.stringify({  scanFile: req.body.scanFile  });
-                        clamTreatment.doSingleClamTreatment(ipAddress, postData, function(data){
-                          logger.info('Result:' + data);
+                      logger.debug(requestId + 'VM Name:' + vmName + ' with IP ' + ipAddress + ' created sucessfully');
+                        var postData = JSON.stringify({  scanFile: req.body.scanFile , "requestId" : requestId });
+                        clamTreatment.doSingleClamTreatment(ipAddress, postData, requestId, function(data){
                           res.send('<pre>'+ data + '</pre>');
-                          logger.debug('VM Name:' + vmName + ' with IP ' + ipAddress + ' deletion started');
+                          logger.debug(requestId + 'VM Name:' + vmName + ' with IP ' + ipAddress + ' deletion started');
                           // Now destroy the VM
-                          vmProcessoer.destroyVM(vmName, configData, function (err, result) {
+                          vmProcessoer.destroyVM(vmName, configData, requestId, function (err, result) {
                             if (err) {
-                                logger.error('Error: ' + err);
+                                logger.error(requestId + 'Error: ' + err);
                             } else {
-                                logger.info('VM Name:' + vmName +  ' deletion done.');
+                                logger.info(requestId + 'VM Name:' + vmName +  ' deletion done.');
                               }
                           });
                       });
@@ -86,32 +86,67 @@ app.post('/treatment/do/clamAV/singlescan', function (req, res) {
   });
 });
 
+// app.post('/treatment/do/clamAV/multiscan', function (req, res) {
+//   var requestId = new Date().getTime() + ' : ';
+//   logger.info(requestId + 'Treatment request received.' + req.body.scanFiles);
+//   treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, requestId, function (treatments) {
+//     if(treatments.length >= 1) {
+//       var treatmentVMs = commonConfig.treatmentVMs;
+//       logger.debug(requestId + 'Supported Treatment VMs are:' + JSON.stringify(treatmentVMs));
+//       for (var i = 0; i < treatments.length; i++) {
+//           for (var j = 0; j < treatmentVMs.length; j++) {
+//               if( (treatments[i].name === treatmentVMs[j].name) && (treatments[i].version === treatmentVMs[j].version)) {
+//
+//
+//                       var files = JSON.parse(req.body.scanFiles);
+//                       var postData = JSON.stringify({  scanFiles: files, "requestId" : requestId  });
+//                       clamTreatment.doMultipleClamTreatment( '51.140.230.123', postData, requestId, function(data){
+//                       res.send('<pre>'+ data + '</pre>');
+//
+//                       });
+//
+//
+//               } else {
+//                 logger.info(requestId + 'Presently Treatment VM for  Treatment Name:' + treatments[i].name + ' Treatment VM:' + treatments[i].version + ' is not supported');
+//               }
+//           }
+//       }
+//     } else {
+//         var err = 'None of the Treatments: ' + req.body.TreatmentType + ', and Version: ' + req.body.Version + ' are listed in Treatment Catalogue';
+//         logger.error(requestId + err);
+//         res.send(err);
+//     }
+//   });
+//
+// });
+
 
 app.post('/treatment/do/clamAV/multiscan', function (req, res) {
-
-  treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, function (treatments) {
+  var requestId = new Date().getTime() + ' : ';
+  logger.info(requestId + 'Treatment request received at /treatment/do/clamAV/multiscan');
+  treatmentCatalogue.getTreatmentVMDetails(req.body.TreatmentType, req.body.Version, requestId, function (treatments) {
     if(treatments.length >= 1) {
       var treatmentVMs = commonConfig.treatmentVMs;
-      logger.debug('Supported Treatment VMs are:' + JSON.stringify(treatmentVMs));
+      logger.debug(requestId + 'Supported Treatment VMs are:' + JSON.stringify(treatmentVMs));
       for (var i = 0; i < treatments.length; i++) {
           for (var j = 0; j < treatmentVMs.length; j++) {
               if( (treatments[i].name === treatmentVMs[j].name) && (treatments[i].version === treatmentVMs[j].version)) {
-                  vmProcessoer.createVM(treatments[i].name, treatments[i].configData, function (err, vmName, ipAddress, configData) {
+                  logger.info('VM creation started.');
+                  vmProcessoer.createVM(treatments[i].name, treatments[i].configData, requestId, function (err, vmName, ipAddress, configData) {
                     if (err) {
-                        logger.error('Error: ' + err);
+                        logger.error(requestId + 'Error: ' + err);
                     } else {
-                      logger.debug('VM Name:' + vmName + ' with IP ' + ipAddress + ' created sucessfully');
+                      logger.debug(requestId + 'VM Name:' + vmName + ' with IP ' + ipAddress + ' created sucessfully');
                       var files = JSON.parse(req.body.scanFiles);
-                      var postData = JSON.stringify({  scanFiles: files  });
-                      clamTreatment.doMultipleClamTreatment( ipAddress, postData, function(data){
-                      logger.info('Result:' + data);
+                      var postData = JSON.stringify({  scanFiles: files, "requestId" : requestId  });
+                      clamTreatment.doMultipleClamTreatment( ipAddress, postData, requestId, function(data){
                       res.send('<pre>'+ data + '</pre>');
                       // Now destroy the VM
-                      vmProcessoer.destroyVM(vmName, configData, function (err, result) {
+                      vmProcessoer.destroyVM(vmName, configData, requestId, function (err, result) {
                           if (err) {
-                              logger.error('Error: ' + err);
+                              logger.error(requestId + 'Error: ' + err);
                           } else {
-                              logger.info('Deletion of VM ' + vmName + ' sucessful');
+                              logger.info(requestId + 'Deletion of VM ' + vmName + ' sucessful');
                             }
                         });
                       });
@@ -124,7 +159,7 @@ app.post('/treatment/do/clamAV/multiscan', function (req, res) {
       }
     } else {
         var err = 'None of the Treatments: ' + req.body.TreatmentType + ', and Version: ' + req.body.Version + ' are listed in Treatment Catalogue';
-        logger.error(err);
+        logger.error(requestId + err);
         res.send(err);
     }
   });
@@ -132,8 +167,14 @@ app.post('/treatment/do/clamAV/multiscan', function (req, res) {
 });
 
 
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+})
+
 var server = app.listen(8001, function () {
     logger.info('TreatmentController Node server is running at :' + server.address().port);
 });
-// Increase the timeout as VM creation is long running process
-server.timeout = 480000;
+
+// Never timeout as ClamAV scan could be very  long running process
+server.timeout = 1000000;

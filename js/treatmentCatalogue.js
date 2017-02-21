@@ -13,9 +13,9 @@ var treatmentCatalogue = function (callback) {
   });
 };
 
-var treatmentVMDetails = function  (treatmentNames, treatmentVersions, callback) {
+var treatmentVMDetails = function  (treatmentNames, treatmentVersions, requestId, callback) {
     var result = [];
-    logger.debug('The user specified treatments :' + treatmentNames + ' and version :' + treatmentVersions);
+    logger.debug(requestId + 'The user specified treatments :' + treatmentNames + ' and version :' + treatmentVersions);
     var treatmentNamesInput = treatmentNames.split(',');
     var treatmentVersionsInput = treatmentVersions.split(',');
     treatmentCatalogue (function (data) {
@@ -29,7 +29,6 @@ var treatmentVMDetails = function  (treatmentNames, treatmentVersions, callback)
           }
         }
       }
-      logger.debug('The matching treatments found in the Treatment Catalogue:' + JSON.stringify(result));
       callback(result);
   });
 };

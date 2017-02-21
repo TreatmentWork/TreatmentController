@@ -40,7 +40,9 @@ text {
 </div>
   <div class="container">
     <form name="submitForm" method="post" onsubmit=onsubmitFunc();>
-      <!-- <input type="button" id="btnAdd" value='check console' onclick="checkconsole()"> -->
+      <input type="button" id="btnAdd" value='check console' onclick="checkconsole()">
+      <input type="button" id="btnAdd" value='check files' onclick="scanFilesFunc()">
+
       <nav>
         <h1>Choose Files:</h1>
         <!-- <div>
@@ -202,18 +204,11 @@ text {
       function computeTextRotation(d) {
         return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
       }
-      //
-      // function updateWindow(){
-      //   x = w.innerWidth || e.clientWidth || g.clientWidth;
-      //   y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-      //
-      //   svg.attr("width", x).attr("height", y);
-      // }
-      // window.onresize = updateWindow;
 
       </script>
     </div>
   </article>
+  <input type="hidden" name ="uniqueID" id="uniqueID" >
   <input type="hidden" name ="TreatmentType" id="TreatmentType" >
   <input type="hidden" name ="Version" id="Version" >
   <input type="hidden" name ="scanFiles" id="scanFiles" >
@@ -235,13 +230,6 @@ function addTreatment() {
   var entry = document.createElement('li');
   entry.appendChild(document.createTextNode(x));
   var input = document.createElement('input');
-
-  // var addAnotherBtn = document.createElement('input');
-  // addAnotherBtn.type = 'button';
-  // addAnotherBtn.id = 'addAnotherBtn';
-  // addAnotherBtn.setAttribute("onclick","addVersionDropdown()");
-  // addAnotherBtn.value = "Add Another Treatment";
-  //
 
   input.type = 'hidden';
   input.value = "ClamAV";
@@ -310,39 +298,27 @@ document.getElementById("TreatmentType").value = treatmentStr;
 
 }
 
+
+// var id = "id" + Math.random().toString(16).slice(2)
+
+
+// var uniqueId = "id" + Math.random().toString(16).slice(2);
+  var uniqueId = "id"+(new Date()).getTime();
+  //     return (prefix || 'id') + (uniqueId++);
+document.getElementById("uniqueID").value = uniqueId;
+console.log(uniqueId);
+
 }
 function selectVersion(select)
 {
   var textStr;
   var text;
   var option = select.options[select.selectedIndex].text;
- // var ul = select.parentNode.getElementsByTagName('ul')[0];
- //
- //  var choices = ul.getElementsByTagName('li');
- //  for (var i = 0; i < choices.length; i++)
- //  if (choices[i].value == option.value)
- //  return;
 
    var li = document.createElement('li');
-  // var input = document.createElement('input');
-//var text = document.createTextNode(option.firstChild.data);
-//var input = document.getElementById("Version");
   li.setAttribute("value",option);
-// select.setAttribute('value',text);
- // textstr += option;
-//   li.appendChild(option);
-  // input.name = "version";
-  //  li.setAttribute("type","hidden");
-  //
-  // li.setAttribute('onclick', 'this.parentNode.removeChild(this);');
    select.appendChild(li);
 
-  // var i=0;
-  // $("input[name = 'version']").each(function(){
-  //   i++;
-  //   var newID='Version'+i;
-  //   $(this).attr('id',newID);
-  // });
 }
 
 
@@ -490,6 +466,9 @@ function selectVersion(select)
       $(this).attr('id',newID);
     });
   }
+
+
+
   </script>
 
   <script>
@@ -536,12 +515,27 @@ function selectVersion(select)
   <script type="text/javascript">
   //input multiple files into submit form
   function scanFilesFunc() {
-    var all = [];
-    all.push(document.getElementById("scanFile1").textContent);
-    all.push(document.getElementById("scanFile2").textContent);
-    document.getElementById("scanFiles").value = JSON.stringify(all) ;
-    console.log('scanFile2:' + document.getElementById("scanFiles").value);
-  }
+  //   var all = [];
+  //   var array = getElementsByName("scanFile")
+  //   for (i=0;i<array.length;i++){
+  //   all.push(document.getElementById("scanFile1").textContent);
+  //   all.push(document.getElementById("scanFile2").textContent);
+  //   document.getElementById("scanFiles").value = JSON.stringify(all) ;
+  //   console.log('scanFile2:' + document.getElementById("scanFiles").value);
+  // }}
+  var files = document.getElementById("chosenFiles");
+var listItem = files.getElementsByTagName("li");
+console.log(listItem);
+var all = [];
+
+for (var i=0; i < listItem.length; i++) {
+    all.push(listItem[i].textContent );
+}
+  document.getElementById("scanFiles").value = JSON.stringify(all) ;
+
+  console.log('scanFile2:' + document.getElementById("scanFiles").value);
+
+}
   </script>
   <script type="text/javascript">
   //input file into submit form

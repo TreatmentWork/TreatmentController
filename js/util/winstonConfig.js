@@ -14,7 +14,6 @@ var tsFormat = function () {
 module.exports = exports = winston = new (winston.Logger)({
   transports: [
     new (winston.transports.Console)({
-      timestamp: tsFormat,
       colorize: true,
       level: 'debug'
     }),

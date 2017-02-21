@@ -44,14 +44,14 @@
 			<clientId>1029781a-7c4f-46dc-82c9-6dfbba6860cf</clientId>
 			<applicationSecret>30AJdIaNNdzkR9DnkoG8+s9qO1IaJn7+tkBnaR+c7Dk=</applicationSecret>
 			<domainId>e45da7cd-9f04-4f71-9321-1d9b2fa4dd5f</domainId>
-			<storageAccountId>treatmentssa19</storageAccountId>
+			<storageAccountId>treatmentssa21</storageAccountId>
 			<sshPublicKey>./data/publicKey.key</sshPublicKey>
 			<resourceGroupLocation>ukwest</resourceGroupLocation>
-			<resourceGroupName>TreatmentsRG</resourceGroupName>
+			<resourceGroupName>TreatmentsRG20</resourceGroupName>
 			<resourceGroupVNet>TreatmentsVNet</resourceGroupVNet>
 			<resourceGroupSubnet>TreatmentsSubnet</resourceGroupSubnet>
 			<resourceGroupNSG>TreatmentsNSG</resourceGroupNSG>
-			<vhdName>TreatmentsVHDPrefix-osDisk.71a10e71-e199-4e4a-b77c-dd7635970b43.vhd</vhdName>
+			<vhdName>TreatmentsVHDPrefix-osDisk.bc15ed86-6e3a-4c6a-bf56-279a9112b876.vhd</vhdName>
 		</Configuration>
 	</Treatment>
 </TreatmentCatalogue>
