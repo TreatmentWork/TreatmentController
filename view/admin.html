@@ -6,275 +6,414 @@
 
 </style>
 <head>
-
+  <meta http-equiv="refresh" content="30"/>
   <link rel="stylesheet" href="css/rads-style-admin.css">
   <script type="text/JavaScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
   <!-- <script type="text/javascript" src="test.json"></script> -->
   <script type="text/javascript" src="//code.jquery.com/jquery-1.10.1.js"></script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src=”jquery-latest.pack.js” type=”text/javascript”></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <!-- <script type=”text/javascript” src=”jquery-latest.pack.js”></script> -->
+  <!-- <script type=”text/javascript" src=”admin.js” ></script> -->
+
 </head>
-<body onload="CreateTableFromJSONongoing">
+<body onload="CreateTableFromJSONongoing();">
   <header>
-   <h1>RADS prototype</h1>
+    <h1>RADS prototype</h1>
   </header>
   <div class="menu-bar">
     <ul>
-      <li><a  href="singleTreatment" >Run Treatment</a></li>
+      <li><a  href="treatment" >Run Treatment</a></li>
       <li><a href="treatmentCatalogue" >View Catalogue</a></li>
       <li><a href="admin" class="active">Submitted treatments</a></li>
-  </ul>
-</div>
+    </ul>
+  </div>
 
 
-<div class="container">
+  <div class="container">
 
-<!-- <nav>
+    <!-- <nav></nav> -->
 
-<br/>
+    <article>
+      <!-- <input id="clickbutton" type="button" onclick="CreateTableFromJSONongoing();CreateTableFromJSONhistorical();CreateTableFromJSONfulllogs();" value="Show logs" /> -->
 
-<p class="filesRunning"><b>3</b></p>
-  <p>files are running</p>
+      <h1>Ongoing Jobs</h1>
 
- <input type="button" id="btnGetCount" value="Count Rows" onclick = "CountRows()" />
-
-</nav> -->
-
-<article>
-  <input type="button" onclick="CreateTableFromJSONongoing()" value="Ongoing Jobs" />
-  <input type="button" onclick="CreateTableFromJSONhistorical()" value="Historical Jobs" />
-  <input type="button" onclick="CreateTableFromJSONfulllogs()" value="Full Logs" />
-
-  <h1>Ongoing Jobs</h1>
-  <br/>
-  <div id="showData" ></div>
-  <br/>
-
-  <!-- <button onclick="move()" class="test-btn">test progress bar</button>
-  <button onclick="showTreatmentDescription()" class="test-btn">test log link</button> -->
-
- <br/>
- <br/>
-<h1>Historical Records</h1>
-<div id="showHistoricalData"></div>
-<br/>
-<br/>
-<h1>Full logs</h1>
-<div id="showFullLogData"></div>
-<br/>
-<br/>
-</article>
-
-<script>
-// document.addEventListener('DOMContentLoaded', function() {
-//
-//  window.onload = CreateTableFromJSONongoing;
-//  // window.onload = CreateTableFromJSONhistorical;
-//  // window.onload = CreateTableFromJSONfulllogs;
-//  // alert("Ready!");
-// }, false);
-
-// function move() {
-//   var elem = document.getElementById("progressBar");
-//   var width = 0;
-//   var id = setInterval(frame, 10);
-//   function frame() {
-//     if (width >= 100) {
-//       clearInterval(id);
-//     } else {
-//       width++;
-//       elem.style.width = width + '%';
-//       document.getElementById("label").innerHTML = width * 1  + '%';
-//     }
-//   }
-// }
-
-//load in treatment versions and description
-var logInfo;
-function readTextFile(file, callback) {
-  var rawFile = new XMLHttpRequest();
-  rawFile.overrideMimeType("application/json");
-  rawFile.open("GET", file, true);
-  rawFile.onreadystatechange = function() {
-    if (rawFile.readyState === 4 && rawFile.status == "200") {
-
-      callback(rawFile.responseText);
-      allText = rawFile.responseText;
-      lines = rawFile.responseText.split("\n");
-      // console.log(lines);
-
-    }
-  }
-  rawFile.send(null);
-}
-var myList;
-var addBrackets;
-var unstring;
-// var path = require("path");
-// console.log(". = %s", path.resolve("."));
-// console.log("__dirname = %s", path.resolve(__dirname));
-readTextFile('TController1.log', function(logtext){
-  logInfo = JSON.stringify(logtext);
-var  s = logtext.replace(/\n/g, ",");
-
-var newStr = s.substring(0, s.length-1);
-
-var addBrackets = '['+newStr+']'; //{"Logs":}
-// console.log(addBrackets);
-
- myList = JSON.parse(addBrackets);
-  console.log(myList);
+      <div id="showData" ></div>
+      <br/>
 
 
- var myReversedArray = new Array();
- $(myList).each(function (key) {
-     myReversedArray.unshift(myList[key]);
- });
- myList = myReversedArray;
- $(myList).each(function (key) {
-     console.log(myList[key]);
- });
+      <h1>Historical Records</h1>
+      <div id="showHistoricalData"></div>
+      <br/>
 
-});
+      <h1>Full logs</h1>
+      <div id="showFullLogData"></div>
+      <br/>
 
-function CreateTableFromJSONongoing() {
+    </article>
 
-var myBooks = myList;
-        // EXTRACT VALUE FOR HTML HEADER.
+    <script>
+    // document.addEventListener('DOMContentLoaded', function() {
+    //
+
+    // function move() {
+    //   var elem = document.getElementById("progressBar");
+    //   var width = 0;
+    //   var id = setInterval(frame, 10);
+    //   function frame() {
+    //     if (width >= 100) {
+    //       clearInterval(id);
+    //     } else {
+    //       width++;
+    //       elem.style.width = width + '%';
+    //       document.getElementById("label").innerHTML = width * 1  + '%';
+    //     }
+    //   }
+    // }
+    //load in treatment versions and description
+    var logInfo;
+    var logHistory;
+    function readTextFile(file, callback) {
+      var rawFile = new XMLHttpRequest();
+      rawFile.overrideMimeType("application/json");
+      rawFile.open("GET", file, true);
+      rawFile.onreadystatechange = function() {
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+
+          callback(rawFile.responseText);
+          allText = rawFile.responseText;
+          lines = rawFile.responseText.split("\n");
+          // console.log(lines);
+
+        }
+      }
+      rawFile.send(null);
+    };
+    var myList;
+    var addBrackets;
+    var unstring;
+
+    readTextFile('TController.log', function(logtext){
+      logInfo = JSON.stringify(logtext);
+      var  s = logtext.replace(/\n/g, ",");
+
+      var newStr = s.substring(0, s.length-1);
+
+      var addBrackets = '['+newStr+']'; //{"Logs":}
+      // console.log(addBrackets);
+
+      myList = JSON.parse(addBrackets);
+
+      var myReversedArray = new Array();
+      $(myList).each(function (key) {
+        myReversedArray.unshift(myList[key]);
+      });
+      myList = myReversedArray;
+      $(myList).each(function (key) {
+        //  console.log(myList[key]);
+      });
+
+    });
+
+    function CreateTableFromJSONongoing() {
+      // alert("hello");
+
+      logHistory = myList;
+      // console.log(logHistory);
+      //
+      var logHistorylength = logHistory.length;
+      // get header values
+      var col = [];
+      for (var i = 0; i < logHistory.length; i++) {
+        for (var key in logHistory[i]) {
+          if (col.indexOf(key) === -1) {
+            col.push(key);
+          }
+        }
+      }
+      // Create table
+      var table = document.createElement("table");
+      // Create header
+      var tr = table.insertRow(-1);                   // TABLE ROW.
+      for (var i = 0; i < col.length; i++) {
+        var th = document.createElement("th");      // TABLE HEADER.
+        th.innerHTML = col[i];
+        tr.class = "sortnr";
+        tr.appendChild(th);
+
+      }
+      // Add data.
+      for (var i = 0; i < logHistory.length; i++) {
+        tr = table.insertRow(-1);
+        for (var j = 0; j < col.length; j++) {
+          var tabCell = tr.insertCell(-1);
+          tabCell.innerHTML = logHistory[i][col[j]];
+        }
+      }
+
+      table.id = "showDataTable";
+
+      // add table to page.
+      var divContainer = document.getElementById("showData");
+      divContainer.innerHTML = "";
+      divContainer.appendChild(table);
+
+      $('#showData').find('tr').each(function(){
+        $(this).find('th').eq(0).before('<th>JobID</th>');
+        $(this).find('td').eq(0).before('<td></td>');
+      });
+
+      $('#showData tr').each(function() {
+        var findid = $(this).find("td:nth-child(3)").text();
+        var getid = findid.substring(0,13);
+        if($.isNumeric(getid) == false);
+        // $(this).remove();
+        // console.log("");
+        else
+        $(this).find("td:first").text(getid);
+        //  $('#showHistoricalData tr td:first').text(getid);
+        // console.log(findid);
+      });
+
+      var seen = {};
+      $('#showData tr').each(function() {
+        var txt = $(this).find("td:first").text();
+
+        if (seen[txt])
+        $(this).remove();
+        else
+        seen[txt] = true;
+      });
+      $('#showData tr td:contains("Result")').parents("tr").remove();
+      $('#showData tr td:contains("VM creation")').parents("tr").remove();
+
+      $('#showData tr').each(function() {
+        var findmessage = $(this).find("td:nth-child(3)").text();
+        var deleteid = findmessage.slice(15);
+        $(this).find("td:nth-child(3)").text(deleteid);
+      });
+
+      $('#showData tr').each(function() {
+        var findmessage = $(this).find("td:nth-child(3)").text();
+        if (findmessage.indexOf("Deletion of VM") >= 0 || findmessage.indexOf("deletion done") >= 0){
+          $(this).remove();
+        }
+      });
+
+    };
+
+    function CreateTableFromJSONhistorical() {
+        logHistory = myList;
+
         var col = [];
-        for (var i = 0; i < myBooks.length; i++) {
-            for (var key in myBooks[i]) {
-                if (col.indexOf(key) === -1) {
-                    col.push(key);
-                }
+        for (var i = 0; i < logHistory.length; i++) {
+          for (var key in logHistory[i]) {
+            if (col.indexOf(key) === -1) {
+              col.push(key);
             }
+          }
         }
         // CREATE DYNAMIC TABLE.
         var table = document.createElement("table");
         // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
         var tr = table.insertRow(-1);                   // TABLE ROW.
         for (var i = 0; i < col.length; i++) {
-            var th = document.createElement("th");      // TABLE HEADER.
-            th.innerHTML = col[i];
-            tr.class = "sortnr";
-            tr.appendChild(th);
-
+          var th = document.createElement("th");      // TABLE HEADER.
+          th.innerHTML = col[i];
+          tr.appendChild(th);
         }
         // ADD JSON DATA TO THE TABLE AS ROWS.
-        for (var i = 0; i < myBooks.length; i++) {
-            tr = table.insertRow(-1);
-            for (var j = 0; j < col.length; j++) {
-                var tabCell = tr.insertCell(-1);
-                   tabCell.innerHTML = myBooks[i][col[j]];
-            }
+        for (var i = 0; i < logHistory.length; i++) {
+          tr = table.insertRow(-1);
+          for (var j = 0; j < col.length; j++) {
+            var tabCell = tr.insertCell(-1);
+            tabCell.innerHTML = logHistory[i][col[j]];
+          }
         }
-
-        table.id = "showDataTable";
-
         // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
-        var divContainer = document.getElementById("showData");
+        var divContainer = document.getElementById("showHistoricalData");
         divContainer.innerHTML = "";
         divContainer.appendChild(table);
 
+        $('#showHistoricalData').find('tr').each(function(){
+          $(this).find('th').eq(0).before('<th>JobID</th>');
+          $(this).find('td').eq(0).before('<td></td>');
+        });
 
-    var seen = {};
-    $('#showData tr').each(function() {
-      var txt = $(this).find("td:first").text();
+        $('#showHistoricalData tr').each(function() {
+          var findid = $(this).find("td:nth-child(3)").text();
+          if (findid.indexOf("Deletion") >= 0 || findid.indexOf("deletion") >= 0
+                || findid.indexOf("Delete") >= 0 || findid.indexOf("delete") >= 0
+                  ||findid.indexOf("====") >= 0 ||findid.indexOf("Clone Management") >= 0 )
+          $(this).remove();
 
-      if (seen[txt])
+        });
+
+        $('#showHistoricalData tr').each(function() {
+          var findid = $(this).find("td:nth-child(3)").text();
+          var getid = findid.substring(0,13);
+          if($.isNumeric(getid) == false);
+
+          // if(getid === "TreatmentCont" || getid === "VM creation s")
+          // $(this).remove();
+          // console.log("");
+
+          else
+          $(this).find("td:first").text(getid);
+
+        });
+
+
+        var seen = {};
+        $('#showHistoricalData tr').each(function() {
+
+          var txt = $(this).find("td:first").text();
+
+          if (seen[txt])
+          $(this).remove();
+          else
+          seen[txt] = true;
+        });
+
+        $('#showHistoricalData tr td:nth-child(3):not(:contains("Result"))').parents("tr").remove();
+
+        $('#showHistoricalData tr').each(function() {
+          var findmessage = $(this).find("td:nth-child(3)").text();
+          var deleteid = findmessage.slice(15);
+
+          if (deleteid.indexOf("Good") >= 0){
+            var results = deleteid.substr(deleteid.indexOf("Good") + 0);
+            var results1 = results.replace(/\"},{"msg":"/g,'. ');
+            var results2 = results1.replace(/\"}]/g,'.');
+            var resultsfinal = results2.replace(/\,/g,', ');
+          }else{
+            var results = deleteid.replace(/\"}/g,'.');
+            var resultsfinal = results.replace(/\:{"msg":"/g,' ');
+          }
+          $(this).find("td:nth-child(3)").text(resultsfinal);
+
+        });
+
+
+    };
+
+    function CreateTableFromJSONfulllogs() {
+
+      logHistory = myList;
+      var col = [];
+      for (var i = 0; i < logHistory.length; i++) {
+        for (var key in logHistory[i]) {
+          if (col.indexOf(key) === -1) {
+            col.push(key);
+          }
+        }
+      }
+      // CREATE DYNAMIC TABLE.
+      var table = document.createElement("table");
+      // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+      var tr = table.insertRow(-1);                   // TABLE ROW.
+      for (var i = 0; i < col.length; i++) {
+        var th = document.createElement("th");      // TABLE HEADER.
+        th.innerHTML = col[i];
+        tr.appendChild(th);
+      }
+      // ADD JSON DATA TO THE TABLE AS ROWS.
+      for (var i = 0; i < logHistory.length; i++) {
+        tr = table.insertRow(-1);
+        for (var j = 0; j < col.length; j++) {
+          var tabCell = tr.insertCell(-1);
+          tabCell.innerHTML = logHistory[i][col[j]];
+        }
+      }
+      // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+      var divContainer = document.getElementById("showFullLogData");
+      divContainer.innerHTML = "";
+      divContainer.appendChild(table);
+
+      $('#showFullLogData').find('tr').each(function(){
+        $(this).find('th').eq(0).before('<th>JobID</th>');
+        $(this).find('td').eq(0).before('<td></td>');
+      });
+      $('#showFullLogData tr').each(function() {
+        var findid = $(this).find("td:nth-child(3)").text();
+        var getid = findid.substring(0,13);
+        if(getid === "TreatmentCont")
+        // if($.isNumeric(getid) == false)
+
         $(this).remove();
-      else
-        seen[txt] = true;
-    });
-        $('#showData tr td:contains("completed")').parents("tr").remove();
+        //console.log("");
+        else
+        $(this).find("td:first").text(getid);
+      });
+      $('#showFullLogData tr').each(function() {
+        var findlevel = $(this).find("td:nth-child(2)").text();
+        if(findlevel === "debug")
+        $(this).remove();
+        else;
+        // console.log("");
+      });
+      $('#showFullLogData tr td:contains("VM creation")').parents("tr").remove();
+
+      $('#showFullLogData tr').each(function() {
+        var findmessages = $(this).find("td:nth-child(3)").text();
+        var deleteids = findmessages.slice(15);
+        $(this).find("td:nth-child(3)").text(deleteids);
+        //
+      });
 
 
+
+    };
+
+
+
+
+
+function refreshpage1() {
+
+  CreateTableFromJSONongoing();
+   CreateTableFromJSONhistorical();
+   CreateTableFromJSONfulllogs();
 }
 
-    function CreateTableFromJSONhistorical() {
 
-    var myBooks = myList;
-            var col = [];
-            for (var i = 0; i < myBooks.length; i++) {
-                for (var key in myBooks[i]) {
-                    if (col.indexOf(key) === -1) {
-                        col.push(key);
-                    }
-                }
-            }
-            // CREATE DYNAMIC TABLE.
-            var table = document.createElement("table");
-            // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
-            var tr = table.insertRow(-1);                   // TABLE ROW.
-            for (var i = 0; i < col.length; i++) {
-                var th = document.createElement("th");      // TABLE HEADER.
-                th.innerHTML = col[i];
-                tr.appendChild(th);
-            }
-            // ADD JSON DATA TO THE TABLE AS ROWS.
-            for (var i = 0; i < myBooks.length; i++) {
-                tr = table.insertRow(-1);
-                for (var j = 0; j < col.length; j++) {
-                    var tabCell = tr.insertCell(-1);
-                    tabCell.innerHTML = myBooks[i][col[j]];
-                }
-            }
-            // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
-            var divContainer = document.getElementById("showHistoricalData");
-            divContainer.innerHTML = "";
-            divContainer.appendChild(table);
+    window.onload = function(){
+        //time is set in milliseconds
+        setTimeout(refreshpage1, 50);
+
+}
+//     // window.onload = function(){
+//     //   // alert("Close me to see logs");
+//     //   CreateTableFromJSONongoing();
+//     //   CreateTableFromJSONhistorical();
+//     //   CreateTableFromJSONfulllogs();
+//     //   // document.getElementById('clickbutton').click();
+//     }
+
+    </script>
+<!-- <script>
+window.onload = function(){
+  alert("Close me to see logs");
+  CreateTableFromJSONongoing();
+  CreateTableFromJSONhistorical();
+  CreateTableFromJSONfulllogs();
+  document.getElementById('clickbutton').click();
+}
+</script> -->
 
 
-                var seen = {};
-                $('#showHistoricalData tr').each(function() {
-                  var txt = $(this).find("td:first").text();
+<!-- <script>
+document.onreadystatechange = function () {
+    if (document.readyState == "complete") {
+        CreateTableFromJSONongoing();
+    }
+}
+</script> -->
 
-                  if (seen[txt])
-                    $(this).remove();
-                  else
-                    seen[txt] = true;
-                });
-                    $('#showHistoricalData tr td:contains("incomplete")').parents("tr").remove();
 
-        }
+  </body>
 
-  function CreateTableFromJSONfulllogs() {
 
-        var myBooks = myList;
-                var col = [];
-                for (var i = 0; i < myBooks.length; i++) {
-                    for (var key in myBooks[i]) {
-                        if (col.indexOf(key) === -1) {
-                            col.push(key);
-                        }
-                    }
-                }
-                // CREATE DYNAMIC TABLE.
-                var table = document.createElement("table");
-                // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
-                var tr = table.insertRow(-1);                   // TABLE ROW.
-                for (var i = 0; i < col.length; i++) {
-                    var th = document.createElement("th");      // TABLE HEADER.
-                    th.innerHTML = col[i];
-                    tr.appendChild(th);
-                }
-                // ADD JSON DATA TO THE TABLE AS ROWS.
-                for (var i = 0; i < myBooks.length; i++) {
-                    tr = table.insertRow(-1);
-                    for (var j = 0; j < col.length; j++) {
-                        var tabCell = tr.insertCell(-1);
-                        tabCell.innerHTML = myBooks[i][col[j]];
-                    }
-                }
-                // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
-                var divContainer = document.getElementById("showFullLogData");
-                divContainer.innerHTML = "";
-                divContainer.appendChild(table);
-
-            }
-</script>
-
-</body>
-</html>
+  </html>

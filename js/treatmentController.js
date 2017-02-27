@@ -27,12 +27,8 @@ app.get('/admin', function (req, res) {
       res.sendFile('admin.html', { root: viewLocation });
 });
 
-app.get('/singleTreatment', function (req, res) {
+app.get('/treatment', function (req, res) {
       res.sendFile('treatmentInput.html', { root: viewLocation });
-});
-
-app.get('/multipleTreatment', function (req, res) {
-    res.sendFile('treatmentMultiInput.html', { root: viewLocation});
 });
 
 app.get('/showTreatments', function (req, res) {
@@ -76,7 +72,7 @@ function clamAvProcessing(requestId, treatmentType, treatmentVersion, scanFiles,
 
 app.post('/treatment/do/clamAV/singlescan', function (req, res) {
     var requestId = new Date().getTime() + ' : ';
-    logger.info(requestId + 'Treatment request received at /treatment/do/clamAV/singlescan');
+    logger.info(requestId + 'ClamAV Treatment request received');
     var scanFiles = [];
     scanFiles.push(req.body.scanFile);
     var result = clamAvProcessing(requestId, req.body.TreatmentType, req.body.Version, JSON.stringify(scanFiles), function (result) {
@@ -88,7 +84,7 @@ app.post('/treatment/do/clamAV/singlescan', function (req, res) {
 
 app.post('/treatment/do/clamAV/multiscan', function (req, res) {
     var requestId = new Date().getTime() + ' : ';
-    logger.info(requestId + 'Treatment request received at /treatment/do/clamAV/multiscan');
+    logger.info(requestId + 'ClamAV Treatment request received.');
     var result = clamAvProcessing(requestId, req.body.TreatmentType, req.body.Version, req.body.scanFiles, function (result) {
         res.send(result);
     });
@@ -96,9 +92,7 @@ app.post('/treatment/do/clamAV/multiscan', function (req, res) {
 });
 
 app.post('/getClamAVTreatmentResults', function (req, res) {
-      //logger.debug('Treatment Agent callback Result:' + JSON.stringify(result));
       res.send('OK');
-      //var resultJSON = JSON.parse(result);
       var vmName = req.body.vmName;
       var configData = req.body.configData;
       var requestId = req.body.requestId;
@@ -131,12 +125,19 @@ app.post('/getVMCreationResults', function (req, res) {
       var requestId = req.body.requestId;
       var vmHost = req.body.vmHost;
       var scanFiles = req.body.scanFiles;
-      logger.debug('vmName:' + vmName + ' requestId:' + requestId  + "vmHost:" + vmHost + ' configData:' + configData);
+      logger.debug('vmName:' + vmName + ' requestId:' + requestId  + "vmHost:" + vmHost + ' scanFiles:' + scanFiles);
       var files = JSON.parse(scanFiles);
-      var postData = JSON.stringify({  scanFiles: files, "requestId" : requestId, "vmName": vmName, "configData": configData   });
-      clamTreatment.doMultipleClamTreatment( vmHost, postData, requestId, function(data){
-        res.send(data);
-      });
+      if(files.length > 1 ) {
+        var postData = JSON.stringify({  scanFiles: files, "requestId" : requestId, "vmName": vmName, "configData": configData   });
+        clamTreatment.doMultipleClamTreatment( vmHost, postData, requestId, function(data){
+          res.send(data);
+        });
+     } else {
+       var postData = JSON.stringify({  scanFile: files[0], "requestId" : requestId, "vmName": vmName, "configData": configData   });
+       clamTreatment.doSingleClamTreatment( vmHost, postData, requestId, function(data){
+         res.send(data);
+       });
+     }
 });
 
 app.use(function (err, req, res, next) {

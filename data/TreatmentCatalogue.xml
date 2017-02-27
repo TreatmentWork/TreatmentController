@@ -17,14 +17,14 @@
 			<clientId>1029781a-7c4f-46dc-82c9-6dfbba6860cf</clientId>
 			<applicationSecret>30AJdIaNNdzkR9DnkoG8+s9qO1IaJn7+tkBnaR+c7Dk=</applicationSecret>
 			<domainId>e45da7cd-9f04-4f71-9321-1d9b2fa4dd5f</domainId>
-			<storageAccountId>treatmentssa22</storageAccountId>
+			<storageAccountId>treatmentssa23</storageAccountId>
 			<sshPublicKey>./data/publicKey.key</sshPublicKey>
 			<resourceGroupLocation>ukwest</resourceGroupLocation>
-			<resourceGroupName>TreatmentsRG21</resourceGroupName>
+			<resourceGroupName>TreatmentsRG22</resourceGroupName>
 			<resourceGroupVNet>TreatmentsVNet</resourceGroupVNet>
 			<resourceGroupSubnet>TreatmentsSubnet</resourceGroupSubnet>
 			<resourceGroupNSG>TreatmentsNSG</resourceGroupNSG>
-			<vhdName>TreatmentsVHDPrefix-osDisk.1f48378b-208a-4aa4-8572-44691c5141bc.vhd</vhdName>
+			<vhdName>TreatmentsVHDPrefix-osDisk.d449fc11-e381-457e-98d7-95f1e527db46.vhd</vhdName>
 		</Configuration>
 	</Treatment>
 	<Treatment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TreatmentCatalogue.xsd">
