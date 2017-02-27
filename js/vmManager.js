@@ -11,13 +11,15 @@ var util = require('util');
 var async = require('async');
 var expandTilde = require('expand-tilde');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
+var vmManagerCallback = require(appRoot + '/js/vmManagerCallback.js');
 var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
 // Import Azure SDK
 var msRestAzure = require('ms-rest-azure');
 var NetworkManagementClient = require('azure-arm-network');
 var ComputeManagementClient	= require('azure-arm-compute');
 
-var createVM = function (treatmentName, configData, requestId, cb) {
+var createVM = function (treatmentName, configData, requestId, scanFiles, cb) {
+  cb('Asynchrounously processing the VM creation. Once VM Creation completes the result will be sent to the Treatment Controller.')
   // Validate environment variables and command line arguments
   _validateEnvironmentVariables(configData);
   var networkClient;
@@ -46,11 +48,7 @@ var createVM = function (treatmentName, configData, requestId, cb) {
                  };
 
       msRestAzure.loginWithServicePrincipalSecret(vmDetails.clientId, vmDetails.secret, vmDetails.domain, function (err, credentials) {
-    	logger.debug(requestId + '\n\n======================================');
-    	logger.debug(requestId + '\nTreatments Agent - VM Clone Management');
-    	logger.debug(requestId + '\n======================================\n');
-
-    	if (err) return console.log(err);
+    	if (err) return logger.error(err);
 
     	// Setup Azure client helps to our subscription / account
     	networkClient  = new NetworkManagementClient( credentials, vmDetails.subscriptionId);
@@ -102,9 +100,9 @@ var createVM = function (treatmentName, configData, requestId, cb) {
       		if (err) {
       		    console.log(util.format('\nError occurred:\n%s',
       			  util.inspect(err, { depth: null })));
-              cb(err);
+              vmManagerCallback.sendVMCreationResult(err);
       		} else {
-              cb(null, results[2], results[3], configData);
+              vmManagerCallback.sendVMCreationResult(null, results[2], results[3], configData, requestId, scanFiles);
       		}
     	   }
     	);
@@ -203,11 +201,8 @@ var destroyVM = function (vmName, configData, requestId, cb) {
                  };
 
       msRestAzure.loginWithServicePrincipalSecret(vmDetails.clientId, vmDetails.secret, vmDetails.domain, function (err, credentials) {
-    	logger.debug(requestId + '\n\n======================================');
-    	logger.debug(requestId + '\nTreatments Agent - VM Clone Management');
-    	logger.debug(requestId + '\n======================================\n');
 
-    	if (err) return console.log(err);
+    	if (err) return logger.error(err);
 
     	// Setup Azure client helps to our subscription / account
     	networkClient  = new NetworkManagementClient( credentials, vmDetails.subscriptionId);
