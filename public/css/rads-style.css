@@ -1,9 +1,10 @@
+/*MAIN CSS*/
 body {
   height: 100%;
 }
 
 div.container {
-    width: 100%;
+  width: 100%;
 
 }
 
@@ -14,38 +15,37 @@ header {
   text-align: center;
 }
 
-
 footer {
-    padding: 1em;
-    color: white;
-    background-color: transparent;
-    text-align: center;
-    clear:right;
+  padding: 1em;
+  color: white;
+  background-color: transparent;
+  text-align: center;
+  clear:right;
 }
 
 nav {
-    float: left;
-    max-width: 40%;
-    margin: 0;
-    padding: 1em;
-    border-right: 1px solid gray;
-height: 100vh;
+  float: left;
+  max-width: 40%;
+  margin: 0;
+  padding: 1em;
+  border-right: 1px solid gray;
+  height: 100vh;
 }
 
 nav ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 nav ul a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 article {
-    margin-left: 10%;
-    padding: 1em;
-    overflow: hidden;
-    height: 100%;
+  margin-left: 10%;
+  padding: 1em;
+  overflow: hidden;
+  height: 100%;
 
 }
 
@@ -57,58 +57,20 @@ button {
 }
 
 ul.options {
-    list-style-type: none;
-    width: 15em;
-    margin: 0.3em 0;
-    padding: 0;
+  list-style-type: none;
+  width: 15em;
+  margin: 0.3em 0;
+  padding: 0;
 }
 
 ul.options li {
-    background: #def url(../images/cross_bright.png) no-repeat 98% center;
-    margin: 1px;
-    padding: 0.1em 0.3em;
-    cursor: pointer;
-    color: #46a;
-    font-weight: bold;
-    border: solid 1px #cde;
-}
-
-circle.child {
-pointer-events: all;
-
-}
-
-circle.parent:hover {
-    stroke: #ff7f0e;
-    stroke-width: .5px;
-}
-
-/*svg {height: 800px;
-float: right;
-margin-right: 0px;
-position: absolute;
-right: 1%;
-
-}*/
-.svg-content {
-  /*height: 800px;*/
-float: right;
-margin-right: 0%;
-position: absolute;
-right: 0%;
-}
-
-.svg-content g {
-
-}
-.svg-section {
-  display: inline-block;
-  position: absolute;
-  width: 40%;
-  padding-bottom: 100vh;
-  vertical-align: top;
-  overflow: hidden;
-right: 0px;
+  background: #def url(../images/cross_bright.png) no-repeat 98% center;
+  margin: 1px;
+  padding: 0.1em 0.3em;
+  cursor: pointer;
+  color: #46a;
+  font-weight: bold;
+  border: solid 1px #cde;
 }
 
 .treatment-section {
@@ -129,63 +91,103 @@ right: 0px;
   margin-top: 6px;
   margin-left: 4px;
 }
+
 .selectedVersion select {
   margin: 3px 3px 7px 5px;
   display: inherit;
-
 }
+
 .submit-btn {
   margin-left: 17px;
 }
 
 .selectedInfo {
-    margin-left: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    border: solid 1px #000033;
-display: table-cell;
-background-color: rgba(215, 233, 255, 0.5);
-color: #46a;
+  margin-left: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: solid 1px #000033;
+  display: table-cell;
+  background-color: rgba(215, 233, 255, 0.5);
+  color: #46a;
 }
 
 #selectedTreatment {
   font-weight: bold;
-
 }
+
 .hide {
   display: none;
 }
+
 .menu-bar {
   text-align: center;
   background-color: black;
-
 }
-.menu-bar ul {
-    list-style-type: none;
 
-    overflow: hidden;
-    background-color: black;
-    display:table;
-margin: 0 auto;
-padding: 0;
+.menu-bar ul {
+  list-style-type: none;
+
+  overflow: hidden;
+  background-color: black;
+  display:table;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .menu-bar li {
-    float: left;
+  float: left;
 }
 
 .menu-bar li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
 }
 
 .menu-bar li a:hover:not(.active) {
-    background-color: #333;
+  background-color: #333;
 }
 
 .active {
-    background-color: rgba(215, 233, 255, 0.5);
+  background-color: rgba(215, 233, 255, 0.5);
+}
+
+/*SVG CSS*/
+circle.child {
+  pointer-events: all;
+
+}
+
+circle.parent:hover {
+  stroke: #ff7f0e;
+  stroke-width: .5px;
+}
+
+path {
+  stroke: #fff;
+  fill-rule: evenodd;
+}
+
+text {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+.svg-content {
+  float: right;
+  margin-right: 0%;
+  position: absolute;
+  right: 0%;
+}
+
+.svg-section {
+  display: inline-block;
+  position: absolute;
+  width: 40%;
+  padding-bottom: 100vh;
+  vertical-align: top;
+  overflow: hidden;
+  right: 0px;
 }

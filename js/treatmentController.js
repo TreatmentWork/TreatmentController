@@ -76,7 +76,8 @@ app.post('/treatment/do/clamAV/singlescan', function (req, res) {
     var scanFiles = [];
     scanFiles.push(req.body.scanFile);
     var result = clamAvProcessing(requestId, req.body.TreatmentType, req.body.Version, JSON.stringify(scanFiles), function (result) {
-        res.send(result);
+      logger.info(result);
+      res.redirect('/admin');
     });
 
 });
@@ -86,7 +87,8 @@ app.post('/treatment/do/clamAV/multiscan', function (req, res) {
     var requestId = new Date().getTime() + ' : ';
     logger.info(requestId + 'ClamAV Treatment request received.');
     var result = clamAvProcessing(requestId, req.body.TreatmentType, req.body.Version, req.body.scanFiles, function (result) {
-        res.send(result);
+      logger.info(result);
+      res.redirect('/admin');
     });
 
 });

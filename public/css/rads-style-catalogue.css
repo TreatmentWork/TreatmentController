@@ -1,9 +1,10 @@
+/*MAIN CSS*/
 body {
   height: 100%;
 }
 
 div.container {
-    width: 100%;
+  width: 100%;
 
 }
 
@@ -14,21 +15,56 @@ header {
   text-align: center;
 }
 
-
 footer {
-    padding: 1em;
-    color: white;
-    background-color: transparent;
-    text-align: center;
-    clear:right;
+  padding: 1em;
+  color: white;
+  background-color: transparent;
+  text-align: center;
+  clear:right;
 }
 
+/*SVG CSS*/
+circle.child {
+  pointer-events: all;
+}
 
+circle.parent:hover {
+  stroke: #ff7f0e;
+  stroke-width: .5px;
+}
 
+.svg-content {
+  float: right;
+  margin-right: 0%;
+  position: absolute;
+  right: 0%;
+}
+
+.svg-section {
+  display: inline-block;
+  position: absolute;
+  width: 40%;
+  padding-bottom: 100vh;
+  vertical-align: top;
+  overflow: hidden;
+  right: 0px;
+}
+
+path {
+  stroke: #fff;
+  fill-rule: evenodd;
+}
+
+text {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+/*BODY CSS*/
 article {
-    padding: 1em;
-    overflow: hidden;
-    height: 100%;
+  padding: 1em;
+  overflow: hidden;
+  height: 100%;
 }
 
 button {
@@ -38,125 +74,62 @@ button {
   margin: 30px;
 }
 
-
-circle.child {
-pointer-events: all;
-
+#search-result {
+  display: inline;
 }
-
-circle.parent:hover {
-    stroke: #ff7f0e;
-    stroke-width: .5px;
-}
-
-/*svg {height: 800px;
-float: right;
-margin-right: 0px;
-position: absolute;
-right: 1%;
-
-}*/
-.svg-content {
-  /*height: 800px;*/
-float: right;
-margin-right: 0%;
-position: absolute;
-right: 0%;
-}
-
-.svg-content g {
-
-}
-.svg-section {
-  display: inline-block;
-  position: absolute;
-  width: 40%;
-  padding-bottom: 100vh;
-  vertical-align: top;
-  overflow: hidden;
-right: 0px;
-}
-
-/*.treatment-section {
-  width: 50%;
-  float: left;
-}*/
-
-/*.selected {
-  display: flex;
-  width: 60%;
-}*/
-/*
-.selectedTreatment {
-  float: left;
-}*/
-
-/*.selectedVersion {
-  margin-top: 6px;
-  margin-left: 4px;
-}
-.selectedVersion select {
-  margin: 3px 3px 7px 5px;
-  display: inherit;
-
-}
-.submit-btn {
-  margin-left: 17px;
-}*/
 
 #selectedInfo {
-    margin-left: 2%;
-    padding-left: 10px;
-    padding-right: 10px;
-    width: 55%;
-    float: left;
-/*display: table-cell;*/
+  margin-left: 2%;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 55%;
+  float: left;
+  /*display: table-cell;*/
 }
 
 .title {
   font-weight: bold;
-  width: 11%;
+  white-space: nowrap;
+  padding-right: 8px;
+  text-align: right;
 }
-/*
-#selectedTreatment {
-  font-weight: bold;
 
+tr, td {
+  padding-left: 1%;
 }
-.hide {
-  display: none;
-}*/
 
+/*MENU CSS*/
 .menu-bar {
   text-align: center;
   background-color: black;
 
 }
 .menu-bar ul {
-    list-style-type: none;
+  list-style-type: none;
 
-    overflow: hidden;
-    background-color: black;
-    display:table;
-margin: 0 auto;
-padding: 0;
+  overflow: hidden;
+  background-color: black;
+  display:table;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .menu-bar li {
-    float: left;
+  float: left;
 }
 
 .menu-bar li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
 }
 
 .menu-bar li a:hover:not(.active) {
-    background-color: #333;
+  background-color: #333;
 }
 
 .active {
-    background-color: rgba(215, 233, 255, 0.5);
+  background-color: rgba(215, 233, 255, 0.5);
 }
