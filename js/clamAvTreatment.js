@@ -42,7 +42,7 @@ var  doClamTreatment = function  (host, postData, endpoint, requestId, callback)
       });
       // response end
       resHttp.on('end', function () {
-        logger.info(requestId + 'Treatment Result:' + result);
+        logger.debug(requestId + 'Treatment Result:' + result);
         callback(result);
       });
       //response error
