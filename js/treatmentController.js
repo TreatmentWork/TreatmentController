@@ -103,7 +103,7 @@ app.post('/getClamAVTreatmentResults', function (req, res) {
       if(vmName) {
         logger.info(requestId + 'Treatment Result:' + JSON.stringify(result));
       } else {
-        logger.info(requestId + 'Treatment Intermediate Result:' + JSON.stringify(result));
+        logger.info(requestId + 'Treatment intermediate result:' + JSON.stringify(result));
       }
 
       // Now destroy the VM
