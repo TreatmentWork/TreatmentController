@@ -430,29 +430,17 @@ function addTreatment() {
   //switch between single and multi input form
   function onsubmitFunc() {
     console.log("starting");
-// if ($('#chosenTreatments li')==="Libreoffice"){
-//   if ($('#chosenFiles li').length>=2) {
-//     console.log("multiscan");
-//     document.submitForm.action ="/treatment/do/libreoffice/multiscan";
-//     scanFilesFunc();
-//   } else {
-//     console.log("singlescan");
-//     document.submitForm.action ="/treatment/do/libreoffice/singlescan";
-//     scanFileFunc();
-//   }
-// }
-// else  if ($('#chosenTreatments li')==="ClamAV"){
+
     if ($('#chosenFiles li').length>=2) {
       console.log("multiscan");
-      document.submitForm.action ="/treatment/do/multiscan";
+      document.submitForm.action ="/treatment/do/clamAV/multiscan";
       scanFilesFunc();
     } else {
       console.log("singlescan");
-      document.submitForm.action ="/treatment/do/singlescan";
+      document.submitForm.action ="/treatment/do/clamAV/singlescan";
       scanFileFunc();
     };
   }
-
   </script>
 
   <script type="text/javascript">
