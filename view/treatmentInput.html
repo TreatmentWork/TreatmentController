@@ -19,7 +19,7 @@
     </ul>
   </div>
   <div class="container">
-    <form name="submitForm" method="post" onsubmit=onsubmitFunc();>
+    <form name="submitForm" method="post" onsubmit="return validateVersion()">
 
       <nav>
         <h1>Choose Files:</h1>
@@ -243,6 +243,8 @@ function addTreatment() {
     var uniqueId = "id"+(new Date()).getTime();
     document.getElementById("uniqueID").value = uniqueId;
     console.log(uniqueId);
+
+    onsubmitFunc();
   }
 
   function selectVersion(select)
@@ -414,23 +416,43 @@ function addTreatment() {
 
     observer.observe(target, config);
   }
+
+  function validateVersion() {
+    var x = document.forms["submitForm"]["Version"].value;
+    if (x == "Please select version") {
+        alert("Please choose a version number");
+        return false;
+    }
+}
   </script>
 
   <script>
   //switch between single and multi input form
   function onsubmitFunc() {
     console.log("starting");
-
+// if ($('#chosenTreatments li')==="Libreoffice"){
+//   if ($('#chosenFiles li').length>=2) {
+//     console.log("multiscan");
+//     document.submitForm.action ="/treatment/do/libreoffice/multiscan";
+//     scanFilesFunc();
+//   } else {
+//     console.log("singlescan");
+//     document.submitForm.action ="/treatment/do/libreoffice/singlescan";
+//     scanFileFunc();
+//   }
+// }
+// else  if ($('#chosenTreatments li')==="ClamAV"){
     if ($('#chosenFiles li').length>=2) {
       console.log("multiscan");
-      document.submitForm.action ="/treatment/do/clamAV/multiscan";
+      document.submitForm.action ="/treatment/do/multiscan";
       scanFilesFunc();
     } else {
       console.log("singlescan");
-      document.submitForm.action ="/treatment/do/clamAV/singlescan";
+      document.submitForm.action ="/treatment/do/singlescan";
       scanFileFunc();
     };
   }
+
   </script>
 
   <script type="text/javascript">

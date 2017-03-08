@@ -7,7 +7,7 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <title>RADS Admin</title>
 </head>
-<body onload="CreateTableFromJSONongoing();">
+<body onload="CreateTableFromJSONongoing();javascript:pageloadEvery(30000);">
   <header>
     <h1>RADS prototype</h1>
   </header>
@@ -15,23 +15,25 @@
     <ul>
       <li><a  href="treatment" >Run Treatment</a></li>
       <li><a href="treatmentCatalogue" >View Catalogue</a></li>
-      <li><a href="admin" class="active">Submitted treatments</a></li>
+      <li><a href="admin" class="active">Submitted Treatments</a></li>
     </ul>
   </div>
 
   <div class="container">
     <!-- <nav></nav> -->
     <article>
+      <input type="button" value="Stop treatment pool" id="stoptreatmentpool" class="togglebtn" /></h1>
+      <input type="button" value="Run treatment pool" id="runtreatmentpool" class="togglebtn" /></h1>
       <h1>Ongoing Jobs</h1>
 
       <div id="showData" ></div>
       <br/>
 
-      <h1>Historical Records</h1>
+      <h1>Historical Records <input type="button" value="Toggle run times" id="toggleRuntime" class="togglebtn" /></h1>
       <div id="showHistoricalData"></div>
       <br/>
 
-      <h1>Full logs</h1>
+      <h1>Full logs <input type="button" value="Toggle debug messages" id="togglebtn" class="togglebtn" /></h1>
       <div id="showFullLogData"></div>
       <br/>
     </article>
@@ -64,7 +66,6 @@
       var newStr = s.substring(0, s.length-1);
 
       var addBrackets = '['+newStr+']'; //{"Logs":}
-      console.log(addBrackets);
 
       myList = JSON.parse(addBrackets);
 
@@ -74,7 +75,6 @@
       });
       myList = myReversedArray;
       $(myList).each(function (key) {
-        //  console.log(myList[key]);
       });
     });
 
@@ -82,7 +82,6 @@
       // alert("hello");
 
       logHistory = myList;
-      // console.log(logHistory);
       //
       var logHistorylength = logHistory.length;
       // get header values
@@ -139,6 +138,9 @@
         else
         seen[txt] = true;
       });
+      //   if ($('#showData tr td:contains("Result")') && $('#showData tr td:not(:contains("Treatment is being performed")')){
+      //       $('#showData tr td').parents("tr").remove();
+      // }
       $('#showData tr td:contains("Result")').parents("tr").remove();
       $('#showData tr td:contains("VM creation")').parents("tr").remove();
       $('#showData tr').each(function() {
@@ -151,6 +153,31 @@
         if (findmessage.indexOf("Deletion of VM") >= 0 || findmessage.indexOf("deletion done") >= 0){
           $(this).remove();
         }
+      });
+      $('#showData').find('tr').each(function(){
+        $(this).find('th').eq(3).before('<th>Date</th>');
+        $(this).find('td').eq(3).before('<td></td>');
+      });
+      $('#showData tr').each(function() {
+        var timestamp = $(this).find("td:nth-child(5)").text();
+        var date = timestamp.substring(0,10);
+
+        var dateFinal = reverseString(date);
+        var dateFormatted = dateFinal.substring(0,2)+"-"+dateFinal.substring(2,4)+"-"+dateFinal.substring(4,8);
+        $(this).find("td:nth-child(4)").text(dateFormatted);
+
+      });
+      $('#showData tr').each(function() {
+        var timestamp = $(this).find("td:nth-child(5)").text();
+
+        var time = timestamp.slice(11);
+        var timeFinal = time.substring(0,5);
+        $(this).find("td:nth-child(5)").text(timeFinal);
+      });
+      $('#showData').find('tr').each(function(){
+        $(this).find('th').eq(1).text("Level");
+        $(this).find('th').eq(2).text("Message");
+        $(this).find('th').eq(4).text("Time");
       });
     };
 
@@ -192,6 +219,14 @@
         $(this).find('th').eq(0).before('<th>JobID</th>');
         $(this).find('td').eq(0).before('<td></td>');
       });
+      $('#showHistoricalData').find('tr').each(function(){
+        $(this).find('th').eq(3).after('<th>Start Time</th>');
+        $(this).find('td').eq(3).after('<td></td>');
+      });
+      $('#showHistoricalData').find('tr').each(function(){
+        $(this).find('th').eq(4).after('<th>Result</th>');
+        $(this).find('td').eq(4).after('<td></td>');
+      });
       $('#showHistoricalData tr').each(function() {
         var findid = $(this).find("td:nth-child(3)").text();
         if (findid.indexOf("Deletion") >= 0 || findid.indexOf("deletion") >= 0
@@ -214,23 +249,105 @@
         else
         seen[txt] = true;
       });
-      $('#showHistoricalData tr td:nth-child(3):not(:contains("Result"))').parents("tr").remove();
+      // $('#showHistoricalData tr td:nth-child(3):not(:contains("Result"))').parents("tr").remove();
       $('#showHistoricalData tr').each(function() {
         var findmessage = $(this).find("td:nth-child(3)").text();
         var deleteid = findmessage.slice(15);
         if (deleteid.indexOf("Good") >= 0){
           var results = deleteid.substr(deleteid.indexOf("Good") + 0);
           var results1 = results.replace(/\"},{"msg":"/g,'. ');
-          var results2 = results1.replace(/\"}]/g,'.');
+          var results2 = results1.replace(/\"}]/g,'');
           var resultsfinal = results2.replace(/\,/g,', ');
         }else{
-          var results = deleteid.replace(/\"}/g,'.');
+          var results = deleteid.replace(/\"}/g,'');
           var resultsfinal = results.replace(/\:{"msg":"/g,' ');
         }
         $(this).find("td:nth-child(3)").text(resultsfinal);
       });
+      $('#showHistoricalData').find('tr').each(function(){
+        $(this).find('th').eq(3).before('<th>Date</th>');
+        $(this).find('td').eq(3).before('<td></td>');
+      });
+      $('#showHistoricalData tr').each(function() {
+        var timestamp = $(this).find("td:nth-child(5)").text();
+        var date = timestamp.substring(0,10);
+
+        var dateFinal = reverseString(date);
+        var dateFormatted = dateFinal.substring(0,2)+"-"+dateFinal.substring(2,4)+"-"+dateFinal.substring(4,8);
+        $(this).find("td:nth-child(4)").text(dateFormatted);
+
+      });
+      $('#showHistoricalData tr').each(function() {
+        var timestamp = $(this).find("td:nth-child(6)").text();
+
+        var time = timestamp.slice(11);
+        var timeFinal = time.substring(0,5);
+        $(this).find("td:nth-child(6)").text(timeFinal);
+      });
+      $('#showHistoricalData tr').each(function() {
+        var result = $(this).find("td:nth-child(3)").text();
+        if (result.indexOf("Bad files:/") >= 0){
+
+          $(this).find("td:nth-child(7)").text("FAIL");
+          // $(this).find("td:nth-child(5)").text("FAIL");
+          $(this).css({"color":"red", "font-weight":"bold"});
+          var infected = $(this).find("td:nth-child(3)").text();
+          // var infectedResult = infected.substr(deleteid.indexOf("Good") + 0);
+          var infectedResult = infected.substr(infected.indexOf("Bad files:/") + 0);
+          var infectedResult1 = infectedResult.replace(/Bad files:/g,'Infected Files: ');
+          var infectedResult2 = infectedResult1.replace(/"}]/g,'');
+          var infectedResult3 = infectedResult2.replace(/,/g,', ');
+          $(this).find("td:nth-child(3)").text(infectedResult3);
+        }
+        else if (result.indexOf("infected!") >= 0){
+          $(this).find("td:nth-child(7)").text("FAIL");
+          // $(this).find("td:nth-child(5)").text("FAIL");
+          $(this).css({"color":"red", "font-weight":"bold"});
+          var infected = $(this).find("td:nth-child(3)").text();
+
+          var infectedsingleResult = infected.substr(infected.indexOf("msg\":\"File \'") + 12);
+          var infectedsingleResult1 = infectedsingleResult.replace(/' is infected!]/g,'');
+          var infectedsingleResult2 = "Infected File: "+infectedsingleResult1;
+
+          $(this).find("td:nth-child(3)").text(infectedsingleResult2);
+
+        }
+        else{
+          $(this).find("td:nth-child(3)").text("No infected files found; all treatments passed");
+          $(this).find("td:nth-child(7)").text("PASS");
+        }
+      });
+
+      $('#showHistoricalData').find('tr').each(function(){
+        $(this).find('th').eq(1).text("Level");
+        $(this).find('th').eq(2).text("Message");
+        $(this).find('th').eq(4).text("Start Time");
+        $(this).find('th').eq(5).text("End Time");
+      });
+      $('#showHistoricalData tr').each(function() {
+        var result = $(this).find("td:nth-child(3)").text();
+        if (result.indexOf("Infected") >= 0){
+          $(this).find("td:nth-child(7)").text("FAIL");
+        } else {
+          $(this).find("td:nth-child(7)").text("PASS");
+        }
+      });
+
+      $('#showHistoricalData').find('tr').each(function(){
+        $(this).find('th').eq(5).after('<th>VM Startup Time</th>');
+        $(this).find('td').eq(5).after('<td></td>');
+      });
+      $('#showHistoricalData').find('tr').each(function(){
+        $(this).find('th').eq(6).after('<th>Treatment Run-time</th>');
+        $(this).find('td').eq(6).after('<td></td>');
+      });
+      $('#showHistoricalData').find('tr').each(function(){
+        $(this).find('th').eq(7).after('<th>VM Shutdown Time</th>');
+        $(this).find('td').eq(7).after('<td></td>');
+      });
     };
 
+    var endTime;
     function CreateTableFromJSONfulllogs() {
 
       logHistory = myList;
@@ -263,10 +380,13 @@
       var divContainer = document.getElementById("showFullLogData");
       divContainer.innerHTML = "";
       divContainer.appendChild(table);
-
       $('#showFullLogData').find('tr').each(function(){
         $(this).find('th').eq(0).before('<th>JobID</th>');
         $(this).find('td').eq(0).before('<td></td>');
+      });
+      $('#showFullLogData').find('tr').each(function(){
+        $(this).find('th').eq(3).before('<th>Date</th>');
+        $(this).find('td').eq(3).before('<td></td>');
       });
       $('#showFullLogData tr').each(function() {
         var findid = $(this).find("td:nth-child(3)").text();
@@ -276,31 +396,199 @@
         else
         $(this).find("td:first").text(getid);
       });
-      $('#showFullLogData tr').each(function() {
-        var findlevel = $(this).find("td:nth-child(2)").text();
-        if(findlevel === "debug")
-        $(this).remove();
-        else;
-      });
       $('#showFullLogData tr td:contains("VM creation")').parents("tr").remove();
       $('#showFullLogData tr').each(function() {
         var findmessages = $(this).find("td:nth-child(3)").text();
         var deleteids = findmessages.slice(15);
         $(this).find("td:nth-child(3)").text(deleteids);
       });
-    };
+      $('#showFullLogData tr').each(function() {
+        var message = $(this).find("td:nth-child(3)").text();
+        if(message.indexOf("postData")>=0){
+          var testRE = message.match("postData(.*)\"configData");
+          var testRE1 = message.match("storageAccountId(.*)}}");
+          var newmessage = "postData"+testRE[1]+"\"storageAccountId"+testRE1[1];
+          $(this).find("td:nth-child(3)").text(newmessage);
+        }
+      });
+      $('#showFullLogData tr').each(function() {
+        var timestamp = $(this).find("td:nth-child(5)").text();
 
-    function refreshpage1() {
+        var date = timestamp.substring(0,10);
 
-      CreateTableFromJSONongoing();
-      CreateTableFromJSONhistorical();
-      CreateTableFromJSONfulllogs();
-    }
-    window.onload = function(){
-      //time is set in milliseconds
-      setTimeout(refreshpage1, 50);
+        var dateFinal = reverseString(date);
+        var dateFormatted = dateFinal.substring(0,2)+"-"+dateFinal.substring(2,4)+"-"+dateFinal.substring(4,8);
+        $(this).find("td:nth-child(4)").text(dateFormatted);
 
-    }
-    </script>
-  </body>
-  </html>
+      });
+      $('#showFullLogData tr').each(function() {
+        var timestamp = $(this).find("td:nth-child(5)").text();
+
+        var time = timestamp.slice(11);
+        var timeFinal = time.substring(0,5);
+        $(this).find("td:nth-child(5)").text(timeFinal);
+      });
+      $('#showFullLogData tr').each(function() {
+        var getid = $(this).find("td:first").text();
+        if (getid === "");
+        else {
+          if ($.isNumeric(getid) == false){
+            $(this).remove();
+          }
+        }
+      });
+      $('#showFullLogData').find('tr').each(function(){
+        $(this).find('th').eq(1).text("Level");
+        $(this).find('th').eq(2).text("Message");
+        $(this).find('th').eq(4).text("Time");
+      });
+
+      var idtxt;
+      var idtxtid;
+      var findmessagetxt;
+      var jobidtxt;
+      var timestamptxt;
+
+      var files = $("#showHistoricalData tr td:nth-child(1)");
+      var all = [];
+      for (var i=0; i < files.length; i++) {
+        all.push(files[i].textContent );
+      }
+      var startTime;
+      var endTime;
+      var vmStart;
+      var treatmentStart;
+      var vmShutdown
+      $('#showFullLogData tr').each(function() {
+        findmessagetxt = $(this).find("td:nth-child(3)").text();  //start time
+        if (findmessagetxt.indexOf("Treatment request received") >= 0){
+          startTime = $(this).find("td:nth-child(5)").text();
+          jobidtxt = $(this).find("td:first").text();
+          for (var i=0; i < all.length; i++) {
+            idtxtid = all[i];
+            if (idtxtid === jobidtxt){
+              var j = i+2;
+              $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(5)").text(startTime);
+            }
+            else{}
+          }}
+          if (findmessagetxt.indexOf("Deletion of VM") >= 0){ //finish time
+            endTime = $(this).find("td:nth-child(5)").text();
+            jobidtxt = $(this).find("td:first").text();
+            for (var i=0; i < all.length; i++) {
+              idtxtid = all[i];
+              if (idtxtid === jobidtxt){
+                var j = i+2;
+                $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(6)").text(endTime);
+              }
+            }
+          }
+          if (findmessagetxt.indexOf("Treatment request received") >= 0){  //stat of vm creation time
+            vmStart = $(this).find("td:nth-child(5)").text();
+            jobidtxt = $(this).find("td:first").text();
+            for (var i=0; i < all.length; i++) {
+              idtxtid = all[i];
+              if (idtxtid === jobidtxt){
+                var j = i+2;
+                $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(7)").text(vmStart);
+              }
+            }
+          }
+          if (findmessagetxt.indexOf("treatment request sent") >= 0){    //start of treatment run time
+            treatmentStart = $(this).find("td:nth-child(5)").text();
+            jobidtxt = $(this).find("td:first").text();
+            for (var i=0; i < all.length; i++) {
+              idtxtid = all[i];
+              if (idtxtid === jobidtxt){
+                var j = i+2;
+                $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(8)").text(treatmentStart);
+              }
+            }
+          }
+          if (findmessagetxt.indexOf("Delete Clone VM") >= 0){    //start of vm delete time
+            vmShutdown = $(this).find("td:nth-child(5)").text();
+            jobidtxt = $(this).find("td:first").text();
+            for (var i=0; i < all.length; i++) {
+              idtxtid = all[i];
+              if (idtxtid === jobidtxt){
+                var j = i+2;
+                $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(9)").text(vmShutdown);
+              }
+            }
+          }
+        });
+
+        $('#showHistoricalData tr').each(function() {
+          var  vmStartTime = $(this).find("td:nth-child(7)").text();
+          var  treatmentStartTime = $(this).find("td:nth-child(8)").text();
+          var  delectionStartTime = $(this).find("td:nth-child(9)").text();
+          var  deletionEndTime = $(this).find("td:nth-child(6)").text();
+
+          var vmStartTimeArr = vmStartTime.split(':'); // split it at the colons
+          var vmStartTimeSeconds = (+vmStartTimeArr[0]) * 60 * 60 + (+vmStartTimeArr[1]) * 60;
+
+          var treatmentStartTimeArr = treatmentStartTime.split(':'); // split it at the colons
+          var treatmentStartTimeSeconds = (+treatmentStartTimeArr[0]) * 60 * 60 + (+treatmentStartTimeArr[1]) * 60;
+
+          var delectionStartTimeArr = delectionStartTime.split(':'); // split it at the colons
+          var delectionStartTimeSeconds = (+delectionStartTimeArr[0]) * 60 * 60 + (+delectionStartTimeArr[1]) * 60;
+
+          var deletionEndTimeArr = deletionEndTime.split(':'); // split it at the colons
+          var deletionEndTimeSeconds = (+deletionEndTimeArr[0]) * 60 * 60 + (+deletionEndTimeArr[1]) * 60;
+
+          var creationProcessing = (treatmentStartTimeSeconds-vmStartTimeSeconds)/60;
+          var treatmentProcessing = (delectionStartTimeSeconds-treatmentStartTimeSeconds)/60;
+          var deletionProcessing = (deletionEndTimeSeconds-delectionStartTimeSeconds)/60;
+
+          jobrow = $(this).find("td:first").text();
+
+          for (var i=0; i < all.length; i++) {
+            rowid = all[i];
+            if (rowid === jobrow){
+
+              var j = i+2;
+              $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(7)").text(treatmentProcessing);
+              $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(8)").text(treatmentProcessing);
+              $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(9)").text(deletionProcessing);
+            }}
+          });
+          $('#showHistoricalData tr').each(function() {
+            var result = $(this).find("td:nth-child(9)").text();
+            if (result.indexOf("NaN") >= 0){
+              $(this).find("td:nth-child(3)").text("Job Cancelled");
+            }
+          });
+        }
+
+        $(function () {
+          $( "#toggleRuntime" ).on( "click", function() {
+            $('td:nth-child(7),th:nth-child(7),td:nth-child(8),th:nth-child(8),td:nth-child(9),th:nth-child(9)').toggle();
+
+          });
+        });
+        $(function () {
+          $( "#togglebtn" ).on( "click", function() {
+            $('td:first-child').parent('tr:not(:contains("info"))').toggle();
+          });
+        });
+        function reverseString(str) {
+          return str.split("-").reverse().join("");
+        }
+
+
+        function refreshpage1() {
+
+          CreateTableFromJSONongoing();
+          CreateTableFromJSONhistorical();
+          CreateTableFromJSONfulllogs();
+        }
+        window.onload = function(){
+          //time is set in milliseconds
+          setTimeout(refreshpage1, 100);
+        }
+        function pageloadEvery(t) {
+          setTimeout('location.reload(true)', t);
+        }
+        </script>
+      </body>
+      </html>

@@ -22,10 +22,13 @@
     "winston": "2.3.1",
     "async": "^1.5.0",
     "expand-tilde" : "2.0.2",
+    "node-dir" : "^0.1.16",
     "ms-rest-azure": "^1.15.0",
     "azure-arm-resource": "1.5.1-preview",
     "azure-arm-network": "0.16.2",
-    "azure-arm-compute": "0.19.1"
+    "azure-arm-compute": "0.19.1",
+    "azure-arm-storage": "0.15.0-preview",
+    "azure-storage" : "2.1.0"
   },
   "keywords": [
     "Treatment"

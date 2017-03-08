@@ -9,6 +9,12 @@
     "logDir" : "logs",
     "logFileName" : "TController.log",
     "vmCallbackEndpoint" :"/getVMCreationResults",
+    "storageCallbackEndpoint" :"/getStorageCreationResults",
     "tControllerHost" : "127.0.0.1",
-    "tControllerPort" : "8001"
+    "tControllerPort" : "8001",
+    "tAgentCallWaitTime" :"5000",
+    "storageMountPoint" : "/mountshare",
+    "storageMountPointPort" : "8081",
+    "storageMountPointEP" : "/mountStorage",
+    "timeout" : "900000"
 }

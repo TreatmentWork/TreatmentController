@@ -43,7 +43,7 @@ var  doClamTreatment = function  (host, postData, endpoint, requestId, callback)
       // response end
       resHttp.on('end', function () {
         logger.debug(requestId + 'Treatment Result:' + result);
-        callback(result);
+        callback(null, result);
       });
       //response error
       resHttp.on('error', function (err) {

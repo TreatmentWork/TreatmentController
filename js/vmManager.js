@@ -11,15 +11,16 @@ var util = require('util');
 var async = require('async');
 var expandTilde = require('expand-tilde');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
-var vmManagerCallback = require(appRoot + '/js/vmManagerCallback.js');
+var resultCallback = require(appRoot + '/js/httpClient.js');
 var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
+var commonConfig = require(appRoot + '/config/commonConfig.json');
 // Import Azure SDK
 var msRestAzure = require('ms-rest-azure');
 var NetworkManagementClient = require('azure-arm-network');
 var ComputeManagementClient	= require('azure-arm-compute');
 
 var createVM = function (treatmentName, configData, requestId, scanFiles, cb) {
-  cb('Asynchrounously processing the VM creation. Once VM Creation completes the result will be sent to the Treatment Controller.')
+  cb('Asynchrounously processing the VM creation. Once VM Creation completes the result will be sent to the Treatment Controller.');
   // Validate environment variables and command line arguments
   _validateEnvironmentVariables(configData);
   var networkClient;
@@ -97,12 +98,20 @@ var createVM = function (treatmentName, configData, requestId, scanFiles, cb) {
     		}
     	],
     	 function (err, results) {
+          var postData;
       		if (err) {
       		    console.log(util.format('\nError occurred:\n%s',
       			  util.inspect(err, { depth: null })));
-              vmManagerCallback.sendVMCreationResult(err);
+              postData = {msg: err.message, error : err};
+              resultCallback.sendHttpRequest(postData, commonConfig.storageCallbackEndpoint, commonConfig.tControllerHost, commonConfig.tControllerPort);
       		} else {
-              vmManagerCallback.sendVMCreationResult(null, results[2], results[3], configData, requestId, scanFiles);
+              postData = {    "requestId" : requestId,
+                              "vmName": results[2],
+                              "configData": configData,
+                              "vmHost" : results[3],
+                              "scanFiles" : scanFiles};
+              //vmManagerCallback.sendVMCreationResult(null, results[2], results[3], configData, requestId, scanFiles);
+              resultCallback.sendHttpRequest(postData, commonConfig.vmCallbackEndpoint, commonConfig.tControllerHost, commonConfig.tControllerPort);
       		}
     	   }
     	);
@@ -310,7 +319,7 @@ function _generateRandomId(prefix, currentList) {
 function _generateVMId(prefix, currentVMList) {
   var newVMid;
   while (true) {
-    newVMid = prefix + Math.floor(Math.random() * 100);
+    newVMid = prefix + Math.floor(Math.random() * 10000);
     if (!currentVMList || currentVMList.indexOf(newVMid) === -1) {
       break;
     }

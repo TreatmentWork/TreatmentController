@@ -10,15 +10,15 @@
          "Owner":"JoeBloggs",
          "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
          "size": 3000},
-  "option2":
-       {"name": "option2",
+  "Libreoffice":
+       {"name": "Libreoffice",
          "xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
          "xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd",
-         "Name":"ClamAV Treatment",
-         "Version":["1.1.0","1.2.1"],
+         "Name":"Libreoffice Treatment",
+         "Version":[""],
          "CreateDate":"2001-12-17T09:30:47+05:00",
          "Status":"Active",
-         "Description":"test Description for option 2",
+         "Description":"This treatment converts files to PDF",
          "Owner":"JoeBloggs",
          "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
          "size": 3000}

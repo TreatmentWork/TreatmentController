@@ -1,34 +1,19 @@
 {
 	"Files": [{
-    "name": "/usr/treatmentAgent/TAgent/js/",
-    "path": "/usr/treatmentAgent/TAgent/js/"
+			"name": "/home/TreatAdmin/test/test1/",
+		  "path": "/home/TreatAdmin/test/test1/"
 		}, {
-			"name": "/usr/treatmentAgent/TAgent/",
-			"path": "/usr/treatmentAgent/TAgent/"
+			"name": "/home/TreatAdmin/test/test2/test2File.txt",
+		  "path": "/home/TreatAdmin/test/test2/test2File.txt"
 		}, {
-      "name": "/usr/treatmentAgent/TAgent/index.js",
-			"path": "/usr/treatmentAgent/TAgent/index.js"
+			"name": "/home/TreatAdmin/test/test1/test12/test123/test123File.txt",
+		  "path": "/home/TreatAdmin/test/test1/test12/test123/test123File.txt"
 		}, {
-			"name": "/home/",
-			"path": "/home/"
+	    "name": "/home/TreatAdmin/test/eicar_com.zip",
+	    "path": "/home/TreatAdmin/test/eicar_com.zip"
 		}, {
-			"name": "/usr/treatmentAgent/eicar.com",
-			"path": "/usr/treatmentAgent/eicar.com"
-		}, {
-			"name": "/usr/treatmentAgent/eicar_com.zip",
-			"path": "/usr/treatmentAgent/eicar_com.zip"
-		}, {
-			"name": "/usr/treatmentAgent/TAgent/logs",
-			"path": "/usr/treatmentAgent/TAgent/logs"
-		},{
-			"name": "/usr/treatmentAgent/TAgent/package.json",
-			"path": "/usr/treatmentAgent/TAgent/package.json"
-		}, {
-			"name": "/usr/treatmentAgent/TAgent/index.js",
-			"path": "/usr/treatmentAgent/TAgent/index.js"
-		}, {
-			"name": "/usr/treatmentAgent/TAgent/js/clamAVScan.js",
-			"path": "/usr/treatmentAgent/TAgent/js/clamAVScan.js"
+			"name": "/home/TreatAdmin/nodepth/eicar.com",
+			"path": "/home/TreatAdmin/nodepth/eicar.com"
 		}
 
 	]
