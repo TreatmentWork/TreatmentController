@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <html>
 <head>
-  <meta http-equiv="refresh" content="30"/>
+  <meta http-equiv="refresh" content="120"/>
   <link rel="stylesheet" href="css/rads-style-admin.css">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <title>RADS Admin</title>
@@ -29,7 +29,11 @@
       <div id="showData" ></div>
       <br/>
 
+      <!--
+      Removed toggle button as times not working correctly
       <h1>Historical Records <input type="button" value="Toggle run times" id="toggleRuntime" class="togglebtn" /></h1>
+      -->
+      <h1>Historical Records</h1>
       <div id="showHistoricalData"></div>
       <br/>
 
@@ -227,11 +231,18 @@
         $(this).find('th').eq(4).after('<th>Result</th>');
         $(this).find('td').eq(4).after('<td></td>');
       });
+
+      // Remove items from the Historical Data list that are not required for display
       $('#showHistoricalData tr').each(function() {
         var findid = $(this).find("td:nth-child(3)").text();
-        if (findid.indexOf("Deletion") >= 0 || findid.indexOf("deletion") >= 0
-        || findid.indexOf("Delete") >= 0 || findid.indexOf("delete") >= 0
-        ||findid.indexOf("====") >= 0 ||findid.indexOf("Clone Management") >= 0 )
+        if (findid.indexOf("Deletion") >= 0
+        || findid.indexOf("deletion") >= 0
+        || findid.indexOf("Delete") >= 0
+        || findid.indexOf("delete") >= 0
+        || findid.indexOf("====") >= 0
+        || findid.indexOf("Clone Management") >= 0
+        || findid.indexOf("destroy") >= 0
+        || findid.indexOf("intermediate") >= 0 )
         $(this).remove();
       });
       $('#showHistoricalData tr').each(function() {
@@ -294,7 +305,7 @@
           var infected = $(this).find("td:nth-child(3)").text();
           // var infectedResult = infected.substr(deleteid.indexOf("Good") + 0);
           var infectedResult = infected.substr(infected.indexOf("Bad files:/") + 0);
-          var infectedResult1 = infectedResult.replace(/Bad files:/g,'Infected Files: ');
+          var infectedResult1 = infectedResult.replace(/Bad files:/g,'Treatment failed: ');
           var infectedResult2 = infectedResult1.replace(/"}]/g,'');
           var infectedResult3 = infectedResult2.replace(/,/g,', ');
           $(this).find("td:nth-child(3)").text(infectedResult3);
@@ -307,13 +318,17 @@
 
           var infectedsingleResult = infected.substr(infected.indexOf("msg\":\"File \'") + 12);
           var infectedsingleResult1 = infectedsingleResult.replace(/' is infected!]/g,'');
-          var infectedsingleResult2 = "Infected File: "+infectedsingleResult1;
+          var infectedsingleResult2 = "Treatment failed: "+infectedsingleResult1;
 
           $(this).find("td:nth-child(3)").text(infectedsingleResult2);
 
         }
         else{
-          $(this).find("td:nth-child(3)").text("No infected files found; all treatments passed");
+
+          // Result OK - Mask with Treatment Successful
+          $(this).find("td:nth-child(3)").text("Treatment successful");
+          $(this).css({"color":"green", "font-weight":"bold"});
+          // $(this).find("td:nth-child(3)").text(result);
           $(this).find("td:nth-child(7)").text("PASS");
         }
       });
@@ -552,12 +567,16 @@
               $('#showHistoricalData tr:nth-child('+j+')').find("td:nth-child(9)").text(deletionProcessing);
             }}
           });
+
           $('#showHistoricalData tr').each(function() {
             var result = $(this).find("td:nth-child(9)").text();
             if (result.indexOf("NaN") >= 0){
-              $(this).find("td:nth-child(3)").text("Job Cancelled");
+              // Remove as this is an inflight status not to be displayed in historic data
+              //$(this).find("td:nth-child(3)").text("Job Cancelled");
+              $(this).remove();
             }
           });
+
         }
 
         $(function () {

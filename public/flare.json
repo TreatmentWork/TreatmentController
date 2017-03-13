@@ -1,4 +1,3 @@
-
 {
  "name": "treatments",
  "children": [
@@ -27,17 +26,7 @@
     {
      "name": "Conversions",
      "children": [
-      {"name": "DataPower",
-        "xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
-        "xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd",
-        "Name":"DataPower Treatment",
-        "Version":["1.1","1.2"],
-        "CreateDate":"2001-12-17T09:30:47+05:00",
-        "Status":"Active",
-        "Description":"This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment",
-        "Owner":"JoeBloggs",
-        "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
-        "size": 3000},
+      {"name": "option1", "size": 3000},
       {"name": "option2", "size": 3000},
       {"name": "option3", "size": 3000},
       {"name": "option4", "size": 3000}
@@ -49,9 +38,19 @@
    "name": "bespoke",
    "children": [
     {
-     "name": "bespoke1",
+     "name": "Libreoffice",
      "children": [
-       {"name": "option1", "size": 3000},
+       {"name": "PDF",
+         "xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
+         "xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd",
+         "Name":"PDF Treatment",
+         "Version":["1.1","1.2"],
+         "CreateDate":"2001-12-17T09:30:47+05:00",
+         "Status":"Active",
+         "Description":"This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment",
+         "Owner":"JoeBloggs",
+         "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
+         "size": 3000},
        {"name": "option2", "size": 3000},
        {"name": "option3", "size": 3000},
        {"name": "option4", "size": 3000},
@@ -78,7 +77,17 @@
     {
      "name": "subgroup1",
      "children": [
-       {"name": "option1", "size": 3000},
+       {"name": "DataPower",
+         "xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
+         "xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd",
+         "Name":"DataPower Treatment",
+         "Version":["1.1","1.2"],
+         "CreateDate":"2001-12-17T09:30:47+05:00",
+         "Status":"Active",
+         "Description":"This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment",
+         "Owner":"JoeBloggs",
+         "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
+         "size": 3000},
        {"name": "option2", "size": 3000},
        {"name": "option3", "size": 3000},
        {"name": "option4", "size": 3000},

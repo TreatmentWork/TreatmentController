@@ -18,8 +18,23 @@
 	    "name": "/treatmentTestFiles/clam/test/eicar_com.zip",
 	    "path": "/treatmentTestFiles/clam/test/eicar_com.zip"
 		}, {
-			"name": "/treatmentTestFiles/clam/nodepth/eicar.com",
-			"path": "/treatmentTestFiles/clam/nodepth/eicar.com"
+			"name": "/treatmentTestFiles/clam/test/eicar.com",
+			"path": "/treatmentTestFiles/clam/test/eicar.com"
+		}, {
+			"name": "/treatmentTestFiles/pdf/TreatmentCatalogue.xlsx",
+			"path": "/treatmentTestFiles/pdf/TreatmentCatalogue.xlsx"
+		}, {
+			"name": "/treatmentTestFiles/pdf/TreatmentCatalogueV2.xsd",
+			"path": "/treatmentTestFiles/pdf/TreatmentCatalogueV2.xsd"
+		}, {
+			"name": "/treatmentTestFiles/pdf/Treatments Component Model_v0.3.docx",
+			"path": "/treatmentTestFiles/pdf/Treatments Component Model_v0.3.docx"
+		}, {
+			"name": "/treatmentTestFiles/pdf/Treatments.pptx",
+			"path": "/treatmentTestFiles/pdf/Treatments.pptx"
+		}, {
+			"name": "/treatmentTestFiles/pdf/Treatments_CID.jpg",
+			"path": "/treatmentTestFiles/pdf/Treatments_CID.jpg"
 		}
 
 	]

@@ -21,5 +21,18 @@
          "Description":"This treatment converts files to PDF",
          "Owner":"JoeBloggs",
          "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
-         "size": 3000}
+         "size": 3000},
+ "PDF":
+      {"name": "Libreoffice",
+        "xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
+        "xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd",
+        "Name":"PDF Treatment",
+        "Version":["1.1","1.2"],
+        "CreateDate":"2001-12-17T09:30:47+05:00",
+        "Status":"Active",
+        "Description":"This treatment converts files to PDF",
+        "Owner":"JoeBloggs",
+        "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
+        "size": 3000
+      }
     }

@@ -1,0 +1,8 @@
+{
+    "port" : "8080",
+    "singlePDFScanEP" : "/pdfconversion/singlescan",
+    "multiPDFScanEP" : "/pdfconversion/multiscan",
+    "adminUsername" : "pdftreatment",
+    "adminPassword" : "pdfTreatment123",
+    "timeout" : "900000"
+}

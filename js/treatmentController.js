@@ -5,7 +5,7 @@ var clamTreatment = require('./clamAvTreatment.js');
 var treatmentCatalogue = require('./treatmentCatalogue.js');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
 var commonConfig = require(appRoot + '/config/commonConfig.json');
-var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
+var pdfTAConfig = require(appRoot + '/config/pdfTAConfig.json');
 var vmProcessoer = require('./vmManager.js');
 var fileShareManager = require('./fileShareManager.js');
 var httpClient = require('./httpClient.js');
@@ -147,6 +147,8 @@ app.post('/getVMCreationResults', function (req, res) {
     // TEST TreatmentAgent VM IP
     //var vmHost = '51.141.2.57'; // clamAv
   //  var vmHost = '52.168.168.140'; // Datapower
+    //var vmHost = '51.141.38.212'; // PDF
+
     var scanFiles = req.body.scanFiles;
 
     var postData = {"requestId" : requestId,
@@ -320,6 +322,92 @@ var sendStorageMountRequest = function ( postData, endpoint, vmHost, port, callb
       }
     });
 };
+
+var sendPDFTreatment = function ( vmHost, postData, endpoint, port, callback) {
+  httpClient0.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
+    if(err) {
+      callback(err);
+    } else {
+      callback(null, result);
+    }
+  });
+};
+
+
+//Receive: CLAMAV Storage mount response  Send: CLAM AV treatment request
+app.post('/getPDFStorageMountResult', function (req, res) {
+    var requestId = req.body.requestId;
+    var vmName = req.body.vmName;
+    var configData = req.body.configData;
+    var vmHost = req.body.vmHost;
+    var scanFiles = JSON.parse(req.body.scanFiles);
+    var files =[];
+  	for (var i=0; i<scanFiles.length; i++) {
+  		files.push(commonConfig.storageMountPoint + scanFiles[i]);
+  	}
+    logger.debug('pdfTAConfig:' + pdfTAConfig);
+    logger.debug('pdfTAConfig.singlePDFScanEP:' + pdfTAConfig.singlePDFScanEP);
+    logger.debug('pdfTAConfig.multiPDFScanEP:' + pdfTAConfig.multiPDFScanEP);
+    logger.debug('pdfTAConfig.port:' + pdfTAConfig.port);
+    logger.debug('files.length:' + files.length);
+
+    logger.debug('vmName:' + vmName + ' requestId:' + requestId  + "vmHost:" + vmHost + ' scanFiles:' + files);
+    if (files.length > 1 ) {
+        postData = JSON.stringify({  scanFiles: files, "requestId" : requestId, "vmName": vmName, "configData": configData   });
+        // Azure API sends the VM creation singnal too soon. Wait for some time beofre making Treatment Agent call.
+        setTimeout(sendPDFTreatment, parseInt(commonConfig.tAgentCallWaitTime), vmHost, postData, pdfTAConfig.multiPDFScanEP, pdfTAConfig.port, function(data) {
+          res.send(data);
+        });
+   } else {
+        postData = JSON.stringify({  scanFile: files[0], "requestId" : requestId, "vmName": vmName, "configData": configData   });
+       // Azure API sends the VM creation singnal too soon. Wait for some time beofre making Treatment Agent call.
+       setTimeout(sendPDFTreatment, parseInt(commonConfig.tAgentCallWaitTime), vmHost, postData, pdfTAConfig.singlePDFScanEP, pdfTAConfig.port, function(data) {
+         res.send(data);
+       });
+   }
+});
+
+//Receive: treatment response  Send: VM destroy request
+app.post('/getpdfTreatmentResults', function (req, res) {
+      res.send('OK');
+      var vmName = req.body.vmName;
+      var configData = req.body.configData;
+      var requestId = req.body.requestId;
+      var result = req.body.result;
+      logger.debug('vmName:' + vmName + ' requestId:' + requestId + ' configData:' + configData + "\nresult:" + JSON.stringify(result));
+      var strResult = JSON.stringify(result);
+      strResult = strResult.replace(/\/mountshare/g, '');
+      if(vmName) {
+        logger.info(requestId + 'Treatment Result:' + strResult);
+      } else {
+        logger.info(requestId + 'Treatment intermediate result:' + strResult);
+      }
+
+      // Now destroy the VM
+      if(vmName) {
+          // Now destroy the Storage account
+          // logger.debug(requestId + 'Going to destroy Storage account : ' + configData.storageAccountName);
+          // fileShareManager.destroyStorageFileShare(requestId, configData, function(err, data) {
+          //   if (err) {
+          //       logger.error(requestId + 'Error in deletion of storage File share: ' + err);
+          //   } else {
+          //       logger.info(requestId + 'Deletion of storage File share' + configData.storageAccountName + ' was successful.');
+          //     }
+          // });
+
+         logger.debug(requestId + 'VM :' + vmName +  ' deletion started');
+         vmProcessoer.destroyVM(vmName, configData, requestId, function (err, result) {
+            if (err) {
+                logger.error(requestId + 'Error in deletion of VM: ' + err);
+            } else {
+                logger.info(requestId + 'Deletion of VM ' + vmName + ' successful.');
+              }
+          });
+
+      } else {
+          logger.debug('vm name and config data are null( possibly intremediate result is received) so VM is not being destroyed yet');
+      }
+});
 
 
 app.use(function (err, req, res, next) {

@@ -57,4 +57,33 @@
 		</Configuration>
 	</Treatment>
 
+	<Treatment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TreatmentCatalogue.xsd">
+	<Name>PDF</Name>
+	<Version>1.1</Version>
+	<CreateDate>2001-12-17T09:30:47+05:00</CreateDate>
+	<Status>Active</Status>
+	<Description>This treatment will convert files to PDF</Description>
+	<Owner>JoeBloggs</Owner>
+	<TrreatmentType>
+		<IsTransformed>false</IsTransformed>
+		<IsCOTs>true</IsCOTs>
+		<IsCustom>true</IsCustom>
+	</TrreatmentType>
+	<Configuration>
+		<azureSubscriptionId>a4ed96ec-5fd0-4d5d-87da-a7047a8595db</azureSubscriptionId>
+		<clientId>1029781a-7c4f-46dc-82c9-6dfbba6860cf</clientId>
+		<applicationSecret>30AJdIaNNdzkR9DnkoG8+s9qO1IaJn7+tkBnaR+c7Dk=</applicationSecret>
+		<domainId>e45da7cd-9f04-4f71-9321-1d9b2fa4dd5f</domainId>
+		<storageAccountId>pdftreatmentstd</storageAccountId>
+		<sshPublicKey>./data/publicKey.key</sshPublicKey>
+		<resourceGroupLocation>ukwest</resourceGroupLocation>
+		<resourceGroupName>PDFresourceGroup</resourceGroupName>
+		<resourceGroupVNet>PDFresourceGroup-vnet</resourceGroupVNet>
+		<resourceGroupSubnet>default</resourceGroupSubnet>
+		<resourceGroupNSG>pdfTestingA1-nsg</resourceGroupNSG>
+		<vhdName>TreatmentsVHDPrefix-osDisk.8405be44-15bb-4e45-8205-09b4d786c894.vhd</vhdName>
+		<vmSize>Standard_A1</vmSize>
+	</Configuration>
+</Treatment>
+
 </TreatmentCatalogue>

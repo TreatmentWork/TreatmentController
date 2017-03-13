@@ -8,6 +8,10 @@
       {
         "name": "DataPower",
         "version": "1.1"
+      },
+      {
+        "name": "PDF",
+        "version": "1.1"
       }
     ],
     "logDir" : "logs",
