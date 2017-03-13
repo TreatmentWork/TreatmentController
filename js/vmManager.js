@@ -45,7 +45,8 @@ var createVM = function (treatmentName, configData, requestId, scanFiles, cb) {
                    resourceGroupName : configData.resourceGroupName,
                    resourceGroupVNet : configData.resourceGroupVNet,
                    resourceGroupSubnet : configData.resourceGroupSubnet,
-                   resourceGroupSecurity : configData.resourceGroupNSG
+                   resourceGroupSecurity : configData.resourceGroupNSG,
+                   vmSize : configData.vmSize
                  };
 
       msRestAzure.loginWithServicePrincipalSecret(vmDetails.clientId, vmDetails.secret, vmDetails.domain, function (err, credentials) {
@@ -156,7 +157,7 @@ function cloneVM(vmDetails, computeClient, requestId, callback) {
   var publicSSHKey = fs.readFileSync(expandTilde(vmDetails.sshPublicKeyPath), 'utf8');
   var vmParameters = 	{ 	"location": vmDetails.location,
 							"hardwareProfile": {
-									"vmSize": "Standard_A1"
+									"vmSize": vmDetails.vmSize
 							},
 							"storageProfile": {
 									"osDisk": {

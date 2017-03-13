@@ -1,12 +1,194 @@
-{"name":"treatments","children":[{"name":"Off the shelf","children":[{"name":"antivirus","children":[{"name":"ClamAV","xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd","Name":"ClamAV Treatment","Version":["1.1","1.2"],"CreateDate":"2001-12-17T09:30:47+05:00","Status":"Active","Description":"This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment","Owner":"JoeBloggs","TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},"size":3000},{"name":"option2","size":3000},{"name":"option3","size":3000},{"name":"option4","size":3000}]},
-{"name":"Conversion","children":[{"name": "Libreoffice",
-  "xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
-  "xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd",
-  "Name":"Libreoffive Treatment",
-  "Version":["1.1","1.2"],
-  "CreateDate":"2001-12-17T09:30:47+05:00",
-  "Status":"Active",
-  "Description":"This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment",
-  "Owner":"JoeBloggs",
-  "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
-  "size": 3000},{"name":"option2","size":3000},{"name":"option3","size":3000},{"name":"option4","size":3000}]}]},{"name":"bespoke","children":[{"name":"bespoke1","children":[{"name":"option1","size":3000},{"name":"option2","size":3000},{"name":"option3","size":3000},{"name":"option4","size":3000},{"name":"option5","size":3000},{"name":"option6","size":3000}]},{"name":"bespoke2","children":[{"name":"option1","size":3000},{"name":"option2","size":3000},{"name":"option3","size":3000},{"name":"option4","size":3000},{"name":"option5","size":3000},{"name":"option6","size":3000}]}]},{"name":"Data Power","children":[{"name":"subgroup1","children":[{"name":"option1","size":3000},{"name":"option2","size":3000},{"name":"option3","size":3000},{"name":"option4","size":3000},{"name":"option5","size":3000},{"name":"option6","size":3000}]},{"name":"subgroup2","children":[{"name":"option1","size":3000},{"name":"option2","size":3000},{"name":"option3","size":3000},{"name":"option4","size":3000},{"name":"option5","size":3000},{"name":"option6","size":3000},{"name":"option7","size":3000},{"name":"option8","size":3000},{"name":"option9","size":3000}]},{"name":"subgroup3","children":[{"name":"option1","size":3000},{"name":"option2","size":3000,"url":"www.google.com"},{"name":"option3","size":3000}]}]}]}
+{
+	"name": "treatments",
+	"children": [{
+			"name": "Off the shelf",
+			"children": [{
+					"name": "antivirus",
+					"children": [{
+							"name": "ClamAV",
+							"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+							"xsi:noNamespaceSchemaLocation": "TreatmentCatalogue.xsd",
+							"Name": "ClamAV Treatment",
+							"Version": ["1.1", "1.2"],
+							"CreateDate": "2001-12-17T09:30:47+05:00",
+							"Status": "Active",
+							"Description": "This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment",
+							"Owner": "JoeBloggs",
+							"TrreatmentType": {
+								"IsTransformed": "false",
+								"IsCOTs": "true",
+								"IsCustom": "true"
+							},
+							"Configuration": {
+								"AzureImageData": "text",
+								"ImageID": "ASA3145342dfs35df432qdf34dfw2rf"
+							},
+							"size": 3000
+						}, {
+							"name": "option2",
+							"size": 3000
+						}, {
+							"name": "option3",
+							"size": 3000
+						}, {
+							"name": "option4",
+							"size": 3000
+						}
+					]
+				}, {
+					"name": "Conversion",
+					"children": [{
+							"name": "DataPower",
+							"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+							"xsi:noNamespaceSchemaLocation": "TreatmentCatalogue.xsd",
+							"Name": "DataPower Treatment",
+							"Version": ["1.1", "1.2"],
+							"CreateDate": "2001-12-17T09:30:47+05:00",
+							"Status": "Active",
+							"Description": "This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment",
+							"Owner": "JoeBloggs",
+							"TrreatmentType": {
+								"IsTransformed": "false",
+								"IsCOTs": "true",
+								"IsCustom": "true"
+							},
+							"Configuration": {
+								"AzureImageData": "text",
+								"ImageID": "ASA3145342dfs35df432qdf34dfw2rf"
+							},
+							"size": 3000
+						}, {
+							"name": "option2",
+							"size": 3000
+						}, {
+							"name": "option3",
+							"size": 3000
+						}, {
+							"name": "option4",
+							"size": 3000
+						}
+					]
+				}
+			]
+		}, {
+			"name": "bespoke",
+			"children": [{
+					"name": "bespoke1",
+					"children": [{
+							"name": "option1",
+							"size": 3000
+						}, {
+							"name": "option2",
+							"size": 3000
+						}, {
+							"name": "option3",
+							"size": 3000
+						}, {
+							"name": "option4",
+							"size": 3000
+						}, {
+							"name": "option5",
+							"size": 3000
+						}, {
+							"name": "option6",
+							"size": 3000
+						}
+					]
+				}, {
+					"name": "bespoke2",
+					"children": [{
+							"name": "option1",
+							"size": 3000
+						}, {
+							"name": "option2",
+							"size": 3000
+						}, {
+							"name": "option3",
+							"size": 3000
+						}, {
+							"name": "option4",
+							"size": 3000
+						}, {
+							"name": "option5",
+							"size": 3000
+						}, {
+							"name": "option6",
+							"size": 3000
+						}
+					]
+				}
+			]
+		}, {
+			"name": "Data Power",
+			"children": [{
+					"name": "subgroup1",
+					"children": [{
+							"name": "option1",
+							"size": 3000
+						}, {
+							"name": "option2",
+							"size": 3000
+						}, {
+							"name": "option3",
+							"size": 3000
+						}, {
+							"name": "option4",
+							"size": 3000
+						}, {
+							"name": "option5",
+							"size": 3000
+						}, {
+							"name": "option6",
+							"size": 3000
+						}
+					]
+				}, {
+					"name": "subgroup2",
+					"children": [{
+							"name": "option1",
+							"size": 3000
+						}, {
+							"name": "option2",
+							"size": 3000
+						}, {
+							"name": "option3",
+							"size": 3000
+						}, {
+							"name": "option4",
+							"size": 3000
+						}, {
+							"name": "option5",
+							"size": 3000
+						}, {
+							"name": "option6",
+							"size": 3000
+						}, {
+							"name": "option7",
+							"size": 3000
+						}, {
+							"name": "option8",
+							"size": 3000
+						}, {
+							"name": "option9",
+							"size": 3000
+						}
+					]
+				}, {
+					"name": "subgroup3",
+					"children": [{
+							"name": "option1",
+							"size": 3000
+						}, {
+							"name": "option2",
+							"size": 3000,
+							"url": "www.google.com"
+						}, {
+							"name": "option3",
+							"size": 3000
+						}
+					]
+				}
+			]
+		}
+	]
+}

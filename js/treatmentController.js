@@ -9,6 +9,7 @@ var clamTAConfig = require(appRoot + '/config/clamTAConfig.json');
 var vmProcessoer = require('./vmManager.js');
 var fileShareManager = require('./fileShareManager.js');
 var httpClient = require('./httpClient.js');
+var httpClient0 = require('./httpClient0.js');
 var viewLocation= appRoot + '/view';
 
 app.use(express.static(appRoot + '/public'));
@@ -46,10 +47,10 @@ app.post('/showTreatments/do', function (req, res) {
 
 app.post('/treatment/do/clamAV/singlescan', function (req, res) {
     var requestId = new Date().getTime() + ' : ';
-    logger.info(requestId + 'ClamAV Treatment request received');
+    logger.info(requestId + 'Treatment request received: ' + req.body.TreatmentType + ', Version'  + req.body.Version);
     var scanFiles = [];
     scanFiles.push(req.body.scanFile);
-    var result = clamAvProcessing(requestId, req.body.TreatmentType, req.body.Version, JSON.stringify(scanFiles), function (result) {
+    var result = treatmentProcessing(requestId, req.body.TreatmentType, req.body.Version, JSON.stringify(scanFiles), function (result) {
       logger.info(result);
       res.redirect('/admin');
     });
@@ -59,28 +60,28 @@ app.post('/treatment/do/clamAV/singlescan', function (req, res) {
 
 app.post('/treatment/do/clamAV/multiscan', function (req, res) {
     var requestId = new Date().getTime() + ' : ';
-    logger.info(requestId + 'ClamAV Treatment request received.');
-    var result = clamAvProcessing(requestId, req.body.TreatmentType, req.body.Version, req.body.scanFiles, function (result) {
+    logger.info(requestId + 'Treatment request received: ' + req.body.TreatmentType + ', Version'  + req.body.Version);
+    var result = treatmentProcessing(requestId, req.body.TreatmentType, req.body.Version, req.body.scanFiles, function (result) {
       logger.info(result);
       res.redirect('/admin');
     });
 
 });
 
-//Receive: treatment response  Send: VM destroy request
+//Receive: CLAMS AV treatment response  Send: VM and SA destroy request
 app.post('/getClamAVTreatmentResults', function (req, res) {
       res.send('OK');
       var vmName = req.body.vmName;
       var configData = req.body.configData;
       var requestId = req.body.requestId;
       var result = req.body.result;
-      logger.debug('vmName:' + vmName + ' requestId:' + requestId + ' configData:' + configData + "\nresult:" + JSON.stringify(result));
       var strResult = JSON.stringify(result);
+      logger.debug('vmName:' + vmName + ' requestId:' + requestId + ' configData:' + configData + "\nresult:" + strResult);
       strResult = strResult.replace(/\/mountshare/g, '');
       if(vmName) {
-        logger.info(requestId + 'Treatment Result:' + strResult);
+        logger.info(requestId + 'CLAMAV - Treatment Result:' + strResult);
       } else {
-        logger.info(requestId + 'Treatment intermediate result:' + strResult);
+        logger.info(requestId + 'CLAMAV - Treatment intermediate result:' + strResult);
       }
 
       // Now destroy the VM
@@ -109,7 +110,7 @@ app.post('/getClamAVTreatmentResults', function (req, res) {
       }
 });
 
-//Receive: Storage mount response  Send: treatment request
+//Receive: CLAMAV Storage mount response  Send: CLAM AV treatment request
 app.post('/getStorageMountResult', function (req, res) {
     var requestId = req.body.requestId;
     var vmName = req.body.vmName;
@@ -144,7 +145,8 @@ app.post('/getVMCreationResults', function (req, res) {
     var configData = req.body.configData;
     var vmHost = req.body.vmHost;
     // TEST TreatmentAgent VM IP
-    //var vmHost = '51.141.2.57';
+    //var vmHost = '51.141.2.57'; // clamAv
+  //  var vmHost = '52.168.168.140'; // Datapower
     var scanFiles = req.body.scanFiles;
 
     var postData = {"requestId" : requestId,
@@ -153,8 +155,16 @@ app.post('/getVMCreationResults', function (req, res) {
                     "scanFiles" : scanFiles,
                     "storageMountPoint" : commonConfig.storageMountPoint,
                     "configData" : configData};
-    httpClient.sendHttpRequest(postData, commonConfig.storageMountPointEP, vmHost, commonConfig.storageMountPointPort);
-    res.send('OK');
+
+    setTimeout(sendStorageMountRequest, parseInt(commonConfig.tAgentCallWaitTime), postData, commonConfig.storageMountPointEP, vmHost, commonConfig.storageMountPointPort, function( err, result) {
+      if(err) {
+        res.send(err);
+      } else {
+        logger.info(result);
+        res.send('OK');
+      }
+    });
+
 });
 
 // Receive: storage creation response Send: VM creation request.
@@ -172,7 +182,7 @@ app.post('/getStorageCreationResults', function (req, res) {
       });
 });
 
-function clamAvProcessing(requestId, treatmentType, treatmentVersion, scanFiles, callback) {
+function treatmentProcessing(requestId, treatmentType, treatmentVersion, scanFiles, callback) {
     treatmentCatalogue.getTreatmentVMDetails(treatmentType, treatmentVersion, requestId, function (treatments) {
       if(treatments.length >= 1) {
         var vmCreationCallbackResponse = [];
@@ -181,13 +191,10 @@ function clamAvProcessing(requestId, treatmentType, treatmentVersion, scanFiles,
         for (var i = 0; i < treatments.length; i++) {
             for (var j = 0; j < treatmentVMs.length; j++) {
                 if( (treatments[i].name === treatmentVMs[j].name) && (treatments[i].version === treatmentVMs[j].version)) {
-                    logger.info(requestId + 'Going to create VM for treatment: ' + treatments[i].name);
+                    logger.info(requestId + 'Going to create Storage Account for the treatment: ' + treatments[i].name);
                     fileShareManager.createStorageFileShare(scanFiles, treatments[i].configData, treatments[i].name, requestId, function(data) {
                       vmCreationCallbackResponse.push({msg: 'For treatment ' + treatments[i].name + ' File Storage creation response: '  + data });
                     });
-                  //   vmProcessoer.createVM(treatments[i].name, treatments[i].configData, requestId, scanFiles, function (data) {
-                  //     vmCreationCallbackResponse.push({msg: 'For treatment ' + treatments[i].name + ' VM creation response: '  + data });
-                  // });
 
                 } else {
                   logger.info('Presently Treatment VM for  Treatment Name:' + treatments[i].name + ' Treatment VM:' + treatments[i].version + ' is not supported');
@@ -223,6 +230,97 @@ var multipleTreatment = function ( vmHost, postData, requestId, callback) {
          }
      });
 };
+
+
+
+//Receive: treatment response  Send: VM destroy request
+app.post('/getDPTreatmentResult', function (req, res) {
+      res.send('/getDPTreatmentResult -> OK');
+      var vmName = req.body.vmName;
+      var configData = req.body.configData;
+      var requestId = req.body.requestId;
+      var result = req.body.result;
+      var strResult = JSON.stringify(result);
+      logger.debug('vmName:' + vmName + ' requestId:' + requestId + ' configData:' + configData + "\nresult:" + strResult);
+      strResult = strResult.replace(/\/mountshare/g, '');
+      if(vmName) {
+        logger.info(requestId + 'DATA POWER - Treatment Result:' + strResult);
+      } else {
+        logger.info(requestId + 'DATA POWER - intermediate result:' + strResult);
+      }
+
+      // Now destroy the VM
+      if(vmName) {
+        // if the result is written at different (Response) SA then Request SA can be deleted
+          // Now destroy the Storage account
+          //logger.debug(requestId + 'Going to destroy Storage account : ' + configData.storageAccountName);
+          // fileShareManager.destroyStorageFileShare(requestId, configData, function(err, data) {
+          //   if (err) {
+          //       logger.error(requestId + 'Error in deletion of storage File share: ' + err);
+          //   } else {
+          //       logger.info(requestId + 'Deletion of storage File share' + configData.storageAccountName + ' was successful.');
+          //     }
+          // });
+
+         logger.debug(requestId + 'VM :' + vmName +  ' deletion started');
+         vmProcessoer.destroyVM(vmName, configData, requestId, function (err, result) {
+            if (err) {
+                logger.error(requestId + 'Error in deletion of VM: ' + err);
+            } else {
+                logger.info(requestId + 'Deletion of VM ' + vmName + ' successful.');
+              }
+          });
+
+      } else {
+          logger.debug('vm name and config data are null( possibly intremediate result is received) so VM is not being destroyed yet');
+      }
+});
+
+
+//Receive: DP Storage mount response  Send: DP treatment request
+app.post('/getDPStorageMountResult', function (req, res) {
+    var requestId = req.body.requestId;
+    var vmName = req.body.vmName;
+    var configData = req.body.configData;
+    var vmHost = req.body.vmHost;
+    var scanFiles = JSON.parse(req.body.scanFiles);
+    var files =[];
+  	for (var i=0; i<scanFiles.length; i++) {
+  		files.push(commonConfig.storageMountPoint + scanFiles[i]);
+  	}
+
+    logger.debug('vmName:' + vmName + ' requestId:' + requestId  + "vmHost:" + vmHost + ' scanFiles:' + files);
+    var postData = JSON.stringify({  "scanFiles": files, "requestId" : requestId, "vmName": vmName, "configData": configData   });
+    setTimeout(sendDPTreatmentRequest, parseInt(commonConfig.tAgentCallWaitTime), postData, commonConfig.dpTreatmentEP, vmHost, commonConfig.dpTreatmentPort, function( err, result) {
+      if(err) {
+        res.send(err);
+      } else {
+        res.send('OK');
+      }
+    });
+
+});
+
+var sendDPTreatmentRequest = function ( postData, endpoint, vmHost, port, callback) {
+    httpClient0.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
+      if(err) {
+        callback(err);
+      } else {
+        callback(null, result);
+      }
+    });
+};
+
+var sendStorageMountRequest = function ( postData, endpoint, vmHost, port, callback) {
+    httpClient.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
+      if(err) {
+        callback(err);
+      } else {
+        callback(null, result);
+      }
+    });
+};
+
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);

@@ -4,10 +4,9 @@ var commonConfig = require(appRoot + '/config/commonConfig.json');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
 
 var  sendHttpRequest = function  (postData, endPoint, host, port, callback ) {
-    var postDataJSON = JSON.stringify(postData);
     var headers = {
       'Content-Type': 'application/json',
-      'Content-Length': postDataJSON.length
+      'Content-Length': postData.length
     };
     var options = {
       host: host,
@@ -61,11 +60,11 @@ var  sendHttpRequest = function  (postData, endPoint, host, port, callback ) {
     });
 
     //send request witht the postData form
-    reqHttp.write(postDataJSON);
+    reqHttp.write(postData);
     reqHttp.end();
 
     // Do not wait for response. Response will be logged  for satus check
-    logger.debug(postData.requestId + ' for endpoint[' + endPoint + '] request is sent: ' + postDataJSON);
+    logger.debug(postData.requestId + ' for endpoint[' + endPoint + '] request is sent: ' + postData);
 
 };
 

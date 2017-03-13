@@ -434,6 +434,7 @@ function addTreatment() {
     if ($('#chosenFiles li').length>=2) {
       console.log("multiscan");
       document.submitForm.action ="/treatment/do/clamAV/multiscan";
+      //document.submitForm.action ="/treatment/do/DP/scan";
       scanFilesFunc();
     } else {
       console.log("singlescan");

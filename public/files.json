@@ -1,19 +1,25 @@
 {
 	"Files": [{
-			"name": "/home/TreatAdmin/test/test1/",
-		  "path": "/home/TreatAdmin/test/test1/"
+			"name": "/treatmentTestFiles/dp/transformInput.xml",
+		  "path": "/treatmentTestFiles/dp/transformInput.xml"
 		}, {
-			"name": "/home/TreatAdmin/test/test2/test2File.txt",
-		  "path": "/home/TreatAdmin/test/test2/test2File.txt"
+			"name": "/treatmentTestFiles/dp/transformInputErr.xml",
+		  "path": "/treatmentTestFiles/dp/transformInputErr.xml"
 		}, {
-			"name": "/home/TreatAdmin/test/test1/test12/test123/test123File.txt",
-		  "path": "/home/TreatAdmin/test/test1/test12/test123/test123File.txt"
+			"name": "/treatmentTestFiles/clam/test/test1/",
+		  "path": "/treatmentTestFiles/clam/test/test1/"
 		}, {
-	    "name": "/home/TreatAdmin/test/eicar_com.zip",
-	    "path": "/home/TreatAdmin/test/eicar_com.zip"
+			"name": "/treatmentTestFiles/clam/test/test2/test2File.txt",
+		  "path": "/treatmentTestFiles/clam/test/test2/test2File.txt"
 		}, {
-			"name": "/home/TreatAdmin/nodepth/eicar.com",
-			"path": "/home/TreatAdmin/nodepth/eicar.com"
+			"name": "/treatmentTestFiles/clam/test/test1/test12/test123/test123File.txt",
+		  "path": "/treatmentTestFiles/clam/test/test1/test12/test123/test123File.txt"
+		}, {
+	    "name": "/treatmentTestFiles/clam/test/eicar_com.zip",
+	    "path": "/treatmentTestFiles/clam/test/eicar_com.zip"
+		}, {
+			"name": "/treatmentTestFiles/clam/nodepth/eicar.com",
+			"path": "/treatmentTestFiles/clam/nodepth/eicar.com"
 		}
 
 	]

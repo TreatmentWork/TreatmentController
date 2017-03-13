@@ -25,11 +25,12 @@
 			<resourceGroupSubnet>TreatmentsSubnet</resourceGroupSubnet>
 			<resourceGroupNSG>TreatmentsNSG</resourceGroupNSG>
 			<vhdName>TreatmentsVHDPrefix-osDisk.a62337c7-44be-4482-83f1-799777bf37ad.vhd</vhdName>
+			<vmSize>Standard_A1</vmSize>
 		</Configuration>
 	</Treatment>
 	<Treatment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TreatmentCatalogue.xsd">
-		<Name>ClamAV</Name>
-		<Version>1.2</Version>
+		<Name>DataPower</Name>
+		<Version>1.1</Version>
 		<CreateDate>2001-12-17T09:30:47+05:00</CreateDate>
 		<Status>Active</Status>
 		<Description>This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment</Description>
@@ -44,14 +45,16 @@
 			<clientId>1029781a-7c4f-46dc-82c9-6dfbba6860cf</clientId>
 			<applicationSecret>30AJdIaNNdzkR9DnkoG8+s9qO1IaJn7+tkBnaR+c7Dk=</applicationSecret>
 			<domainId>e45da7cd-9f04-4f71-9321-1d9b2fa4dd5f</domainId>
-			<storageAccountId>treatmentssa21</storageAccountId>
+			<storageAccountId>datapowersa21</storageAccountId>
 			<sshPublicKey>./data/publicKey.key</sshPublicKey>
-			<resourceGroupLocation>ukwest</resourceGroupLocation>
-			<resourceGroupName>TreatmentsRG20</resourceGroupName>
-			<resourceGroupVNet>TreatmentsVNet</resourceGroupVNet>
-			<resourceGroupSubnet>TreatmentsSubnet</resourceGroupSubnet>
-			<resourceGroupNSG>TreatmentsNSG</resourceGroupNSG>
-			<vhdName>TreatmentsVHDPrefix-osDisk.bc15ed86-6e3a-4c6a-bf56-279a9112b876.vhd</vhdName>
+			<resourceGroupLocation>eastus</resourceGroupLocation>
+			<resourceGroupName>DataPowerRG</resourceGroupName>
+			<resourceGroupVNet>DataPowerVNet</resourceGroupVNet>
+			<resourceGroupSubnet>DataPowerSubnet</resourceGroupSubnet>
+			<resourceGroupNSG>DataPowerNSG</resourceGroupNSG>
+			<vhdName>TreatmentsVHDPrefix-osDisk.6cba80b5-bb49-4bbf-9947-3aece37d7cd7.vhd</vhdName>
+			<vmSize>Standard_D11_v2</vmSize>
 		</Configuration>
 	</Treatment>
+
 </TreatmentCatalogue>
