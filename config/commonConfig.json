@@ -12,6 +12,10 @@
       {
         "name": "PDF",
         "version": "1.1"
+      },
+      {
+        "name": "GPG",
+        "version": "1.1"
       }
     ],
     "logDir" : "logs",

@@ -1,0 +1,7 @@
+{
+    "port" : "8080",
+    "singleDSignScanEP" : "/dSign/singlescan",
+    "multiDSignScanEP" : "/dSign/multiscan",
+    "digitalSignatureSuffix" : ".ds",
+    "timeout" : "900000"
+}

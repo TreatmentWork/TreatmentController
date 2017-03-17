@@ -34,5 +34,18 @@
         "Owner":"JoeBloggs",
         "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
         "size": 3000
-      }
+      },
+  "GPG":
+       {"name": "DigitalSignature",
+         "xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
+         "xsi:noNamespaceSchemaLocation":"TreatmentCatalogue.xsd",
+         "Name":"GPG Digital Signature",
+         "Version":["1.1"],
+         "CreateDate":"2001-12-17T09:30:47+05:00",
+         "Status":"Active",
+         "Description":"This treatment converts files to PDF",
+         "Owner":"JoeBloggs",
+         "TrreatmentType":{"IsTransformed":"false","IsCOTs":"true","IsCustom":"true"},"Configuration":{"AzureImageData":"text","ImageID":"ASA3145342dfs35df432qdf34dfw2rf"},
+         "size": 3000
+       }
     }

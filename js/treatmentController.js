@@ -6,10 +6,11 @@ var treatmentCatalogue = require('./treatmentCatalogue.js');
 var logger = require(appRoot + '/js/util/winstonConfig.js');
 var commonConfig = require(appRoot + '/config/commonConfig.json');
 var pdfTAConfig = require(appRoot + '/config/pdfTAConfig.json');
+var dSignTAConfig = require(appRoot + '/config/dSignTAConfig.json');
 var vmProcessoer = require('./vmManager.js');
 var fileShareManager = require('./fileShareManager.js');
 var httpClient = require('./httpClient.js');
-var httpClient0 = require('./httpClient0.js');
+var httpClientJSON = require('./httpClientJSON.js');
 var viewLocation= appRoot + '/view';
 
 app.use(express.static(appRoot + '/public'));
@@ -148,7 +149,7 @@ app.post('/getVMCreationResults', function (req, res) {
     //var vmHost = '51.141.2.57'; // clamAv
   //  var vmHost = '52.168.168.140'; // Datapower
     //var vmHost = '51.141.38.212'; // PDF
-
+    //var vmHost = '51.141.39.156'; // DS
     var scanFiles = req.body.scanFiles;
 
     var postData = {"requestId" : requestId,
@@ -158,13 +159,19 @@ app.post('/getVMCreationResults', function (req, res) {
                     "storageMountPoint" : commonConfig.storageMountPoint,
                     "configData" : configData};
 
-    setTimeout(sendStorageMountRequest, parseInt(commonConfig.tAgentCallWaitTime), postData, commonConfig.storageMountPointEP, vmHost, commonConfig.storageMountPointPort, function( err, result) {
-      if(err) {
-        res.send(err);
-      } else {
-        logger.info(result);
-        res.send('OK');
-      }
+    setTimeout(sendStorageMountRequest,
+              parseInt(commonConfig.tAgentCallWaitTime),
+              postData,
+              commonConfig.storageMountPointEP,
+              vmHost,
+              commonConfig.storageMountPointPort,
+              function( err, result) {
+                if(err) {
+                  res.send(err);
+                } else {
+                  logger.info(result);
+                  res.send('OK');
+                }
     });
 
 });
@@ -179,7 +186,26 @@ app.post('/getStorageCreationResults', function (req, res) {
       configData.storageAccountShare = req.body.storageAccountShare;
       configData.key = req.body.key;
       logger.debug('In getStorageCreationResults - treatmentName:' + treatmentName + ' requestId:' + requestId  + ' scanFiles:' + scanFiles + "configData:" + JSON.stringify(configData) );
-      vmProcessoer.createVM(treatmentName, configData, requestId, scanFiles, function (data) {
+      var files = [];
+      var fileStr;
+      // For Digital Signature when storage account was created then each file corresponding detached digital signature file was sent as well.
+      // Now remove the each file corresponding detached digital signature file from the list
+      if(treatmentName === 'GPG') {
+        // For POC , we are assuming the each file their detached digital signature file name will have .ds suffix
+        // e.g if file to be verified is /tmp/ds/file.txt then its detached digital signature file will be  /tmp/ds/file.txt.ds
+          var scanFilesJSON = JSON.parse(scanFiles);
+          for (var fileIndex=0; fileIndex<scanFilesJSON.length; fileIndex++) {
+            if(scanFilesJSON.indexOf(scanFilesJSON[fileIndex] + dSignTAConfig.digitalSignatureSuffix) != -1 ) {
+              files.push(scanFilesJSON[fileIndex]);
+            }
+          }
+          logger.debug('Files Array to be used for traetment:' + files);
+          fileStr = JSON.stringify(files);
+      } else {
+        fileStr = scanFiles;
+      }
+      logger.debug('Files String to be used for treatment:' + fileStr);
+      vmProcessoer.createVM(treatmentName, configData, requestId, fileStr, function (data) {
          res.send({msg: 'For treatment ' + treatmentName + ' VM creation response: '  + data });
       });
 });
@@ -194,12 +220,28 @@ function treatmentProcessing(requestId, treatmentType, treatmentVersion, scanFil
             for (var j = 0; j < treatmentVMs.length; j++) {
                 if( (treatments[i].name === treatmentVMs[j].name) && (treatments[i].version === treatmentVMs[j].version)) {
                     logger.info(requestId + 'Going to create Storage Account for the treatment: ' + treatments[i].name);
-                    fileShareManager.createStorageFileShare(scanFiles, treatments[i].configData, treatments[i].name, requestId, function(data) {
+                    var files = [];
+                    var fileStr;
+                    // For Digital Signature, we need to upload the corresponding detached digital signature files as well.
+                    if(treatments[i].name === 'GPG') {
+                      // For POC , we are assuming the each file their detached digital signature file name will have .ds suffix
+                      // e.g if file to be verified is /tmp/ds/file.txt then its detached digital signature file will be  /tmp/ds/file.txt.ds
+                        var scanFilesJSON = JSON.parse(scanFiles);
+                        console.log('scanFilesJSON.length:' + scanFilesJSON.length);
+                        for (var fileIndex=0; fileIndex<scanFilesJSON.length; fileIndex++) {
+                            files.push(scanFilesJSON[fileIndex]);
+                        		files.push(scanFilesJSON[fileIndex] + dSignTAConfig.digitalSignatureSuffix);
+                        }
+                        logger.debug('Files Array to be copied on new Storage Account:' + files);
+                        fileStr = JSON.stringify(files);
+                    } else {
+                      fileStr = scanFiles;
+                    }
+
+                    logger.debug('Files String to be copied on new Storage Account:' + fileStr);
+                    fileShareManager.createStorageFileShare(fileStr, treatments[i].configData, treatments[i].name, requestId, function(data) {
                       vmCreationCallbackResponse.push({msg: 'For treatment ' + treatments[i].name + ' File Storage creation response: '  + data });
                     });
-
-                } else {
-                  logger.info('Presently Treatment VM for  Treatment Name:' + treatments[i].name + ' Treatment VM:' + treatments[i].version + ' is not supported');
                 }
             }
         }
@@ -213,25 +255,6 @@ function treatmentProcessing(requestId, treatmentType, treatmentVersion, scanFil
     });
 }
 
-var singleTreatment = function ( vmHost, postData, requestId, callback) {
-      clamTreatment.doSingleClamTreatment( vmHost, postData, requestId, function(err, data){
-        if(err) {
-          callback(err);
-         } else {
-           callback(data);
-         }
-     });
-};
-
-var multipleTreatment = function ( vmHost, postData, requestId, callback) {
-      clamTreatment.doMultipleClamTreatment( vmHost, postData, requestId, function(err, data){
-        if(err) {
-          callback(err);
-         } else {
-           callback(data);
-         }
-     });
-};
 
 
 
@@ -303,38 +326,8 @@ app.post('/getDPStorageMountResult', function (req, res) {
 
 });
 
-var sendDPTreatmentRequest = function ( postData, endpoint, vmHost, port, callback) {
-    httpClient0.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
-      if(err) {
-        callback(err);
-      } else {
-        callback(null, result);
-      }
-    });
-};
 
-var sendStorageMountRequest = function ( postData, endpoint, vmHost, port, callback) {
-    httpClient.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
-      if(err) {
-        callback(err);
-      } else {
-        callback(null, result);
-      }
-    });
-};
-
-var sendPDFTreatment = function ( vmHost, postData, endpoint, port, callback) {
-  httpClient0.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
-    if(err) {
-      callback(err);
-    } else {
-      callback(null, result);
-    }
-  });
-};
-
-
-//Receive: CLAMAV Storage mount response  Send: CLAM AV treatment request
+//Receive: PDF Storage mount response  Send: PDF treatment request
 app.post('/getPDFStorageMountResult', function (req, res) {
     var requestId = req.body.requestId;
     var vmName = req.body.vmName;
@@ -367,7 +360,7 @@ app.post('/getPDFStorageMountResult', function (req, res) {
    }
 });
 
-//Receive: treatment response  Send: VM destroy request
+//Receive: PDF treatment response  Send: PDF VM destroy request
 app.post('/getpdfTreatmentResults', function (req, res) {
       res.send('OK');
       var vmName = req.body.vmName;
@@ -378,9 +371,9 @@ app.post('/getpdfTreatmentResults', function (req, res) {
       var strResult = JSON.stringify(result);
       strResult = strResult.replace(/\/mountshare/g, '');
       if(vmName) {
-        logger.info(requestId + 'Treatment Result:' + strResult);
+        logger.info(requestId + 'PDF Conversion Treatment Result:' + strResult);
       } else {
-        logger.info(requestId + 'Treatment intermediate result:' + strResult);
+        logger.info(requestId + 'PDF Conversion Treatment intermediate result:' + strResult);
       }
 
       // Now destroy the VM
@@ -409,6 +402,138 @@ app.post('/getpdfTreatmentResults', function (req, res) {
       }
 });
 
+
+//Receive: Digital Signature Storage mount response  Send: Digital Signature treatment request
+app.post('/getDSignStorageMountResult', function (req, res) {
+    var requestId = req.body.requestId;
+    var vmName = req.body.vmName;
+    var configData = req.body.configData;
+    var vmHost = req.body.vmHost;
+    var scanFiles = JSON.parse(req.body.scanFiles);
+    var files =[];
+  	for (var i=0; i<scanFiles.length; i++) {
+  		files.push(commonConfig.storageMountPoint + scanFiles[i]);
+  	}
+
+    logger.debug('vmName:' + vmName + ' requestId:' + requestId  + "vmHost:" + vmHost + ' scanFiles:' + files);
+    if (files.length > 1 ) {
+        postData = JSON.stringify({  scanFiles: files, "requestId" : requestId, "vmName": vmName, "configData": configData   });
+        // Azure API sends the VM creation singnal too soon. Wait for some time beofre making Treatment Agent call.
+        setTimeout(sendDSignTreatment, parseInt(commonConfig.tAgentCallWaitTime), vmHost, postData, dSignTAConfig.multiDSignScanEP, dSignTAConfig.port, function(data) {
+          res.send(data);
+        });
+   } else {
+        postData = JSON.stringify({  scanFile: files[0], "requestId" : requestId, "vmName": vmName, "configData": configData   });
+       // Azure API sends the VM creation singnal too soon. Wait for some time beofre making Treatment Agent call.
+       setTimeout(sendDSignTreatment, parseInt(commonConfig.tAgentCallWaitTime), vmHost, postData, dSignTAConfig.singleDSignScanEP, dSignTAConfig.port, function(data) {
+         res.send(data);
+       });
+   }
+});
+
+//Receive: Digital Signature treatment response  Send: Digital Signature VM destroy request
+app.post('/getDSignTreatmentResults', function (req, res) {
+      res.send('OK');
+      var vmName = req.body.vmName;
+      var configData = req.body.configData;
+      var requestId = req.body.requestId;
+      var result = req.body.result;
+      logger.debug('vmName:' + vmName + ' requestId:' + requestId + ' configData:' + configData + "\nresult:" + JSON.stringify(result));
+      var strResult = JSON.stringify(result);
+      strResult = strResult.replace(/\/mountshare/g, '');
+      if(vmName) {
+        logger.info(requestId + 'Digital Signature Treatment Result:' + strResult);
+      } else {
+        logger.info(requestId + 'Digital Signature Treatment intermediate result:' + strResult);
+      }
+
+      // Now destroy the VM
+      if(vmName) {
+          // Now destroy the Storage account
+          logger.debug(requestId + 'Going to destroy Storage account : ' + configData.storageAccountName);
+          fileShareManager.destroyStorageFileShare(requestId, configData, function(err, data) {
+            if (err) {
+                logger.error(requestId + 'Error in deletion of storage File share: ' + err);
+            } else {
+                logger.info(requestId + 'Deletion of storage File share' + configData.storageAccountName + ' was successful.');
+              }
+          });
+
+         logger.debug(requestId + 'VM :' + vmName +  ' deletion started');
+         vmProcessoer.destroyVM(vmName, configData, requestId, function (err, result) {
+            if (err) {
+                logger.error(requestId + 'Error in deletion of VM: ' + err);
+            } else {
+                logger.info(requestId + 'Deletion of VM ' + vmName + ' successful.');
+              }
+          });
+
+      } else {
+          logger.debug('vm name and config data are null( possibly intremediate result is received) so VM is not being destroyed yet');
+      }
+});
+
+
+var singleTreatment = function ( vmHost, postData, requestId, callback) {
+      clamTreatment.doSingleClamTreatment( vmHost, postData, requestId, function(err, data){
+        if(err) {
+          callback(err);
+         } else {
+           callback(data);
+         }
+     });
+};
+
+var multipleTreatment = function ( vmHost, postData, requestId, callback) {
+      clamTreatment.doMultipleClamTreatment( vmHost, postData, requestId, function(err, data){
+        if(err) {
+          callback(err);
+         } else {
+           callback(data);
+         }
+     });
+};
+
+var sendStorageMountRequest = function ( postData, endpoint, vmHost, port, callback) {
+    httpClient.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
+      if(err) {
+        callback(err);
+      } else {
+        callback(null, result);
+      }
+    });
+};
+
+var sendDPTreatmentRequest = function ( postData, endpoint, vmHost, port, callback) {
+    httpClientJSON.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
+      if(err) {
+        callback(err);
+      } else {
+        callback(null, result);
+      }
+    });
+};
+
+
+var sendPDFTreatment = function ( vmHost, postData, endpoint, port, callback) {
+  httpClientJSON.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
+    if(err) {
+      callback(err);
+    } else {
+      callback(null, result);
+    }
+  });
+};
+
+var sendDSignTreatment = function ( vmHost, postData, endpoint, port, callback) {
+  httpClientJSON.sendHttpRequest(postData, endpoint, vmHost, port, function( err, result) {
+    if(err) {
+      callback(err);
+    } else {
+      callback(null, result);
+    }
+  });
+};
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);

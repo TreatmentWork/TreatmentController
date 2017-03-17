@@ -21,7 +21,7 @@ var msRestAzure = require('ms-rest-azure');
 var storage	= require('azure-storage');
 
 var createStorageFileShare = function (rootfolderJSON, configData, treatmentName, requestId, cb) {
-  cb('Asynchrounously processing the VM creation. Once VM Creation completes the result will be sent to the Treatment Controller.');
+  cb('Asynchrounously processing the SA creation. Once SA creation completes the result will be sent to the Treatment Controller.');
   // Validate environment variables and command line arguments
   _validateConfigVariables(configData);
   var networkClient;
@@ -38,7 +38,8 @@ var createStorageFileShare = function (rootfolderJSON, configData, treatmentName
                    secret : configData.applicationSecret,
                    subscriptionId : configData.azureSubscriptionId,
                    location : configData.resourceGroupLocation,
-                   resourceGroupName : configData.resourceGroupName
+                   resourceGroupName : configData.resourceGroupName,
+                   quota : configData.fileShareQuota
                  };
 
       msRestAzure.loginWithServicePrincipalSecret(storageDetails.clientId, storageDetails.secret, storageDetails.domain, function (err, credentials) {
@@ -302,7 +303,10 @@ function getStorageAccountKeys(storageDetails, storageManagementClient, callback
 // Helper: Create FileShare
 function createFileShare(storageDetails, fileService, callback) {
 	console.log('Helper: Create Fileshare: ' + storageDetails.storageAccountShare );
-	return fileService.createShareIfNotExists(storageDetails.storageAccountShare, callback);
+  var storageParameters = {
+    "quota": storageDetails.quota
+    };
+	return fileService.createShareIfNotExists(storageDetails.storageAccountShare, storageParameters, callback);
 }
 
 // Helper: delete FileShare

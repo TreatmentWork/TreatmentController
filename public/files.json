@@ -21,6 +21,18 @@
 			"name": "/treatmentTestFiles/clam/test/eicar.com",
 			"path": "/treatmentTestFiles/clam/test/eicar.com"
 		}, {
+			"name": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb",
+			"path": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb"
+		}, {
+			"name": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb.join2copies",
+			"path": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb.join2copies"
+		}, {
+			"name": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb.join4copies",
+			"path": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb.join4copies"
+		}, {
+			"name": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb.join6copies",
+			"path": "/treatmentTestFiles/clam/test/idg7500.nonprod.image_amd64.deb.join6copies"
+		}, {
 			"name": "/treatmentTestFiles/pdf/TreatmentCatalogue.xlsx",
 			"path": "/treatmentTestFiles/pdf/TreatmentCatalogue.xlsx"
 		}, {
@@ -35,6 +47,15 @@
 		}, {
 			"name": "/treatmentTestFiles/pdf/Treatments_CID.jpg",
 			"path": "/treatmentTestFiles/pdf/Treatments_CID.jpg"
+		}, {
+			"name": "/treatmentTestFiles/ds/Treatments.pptx",
+			"path": "/treatmentTestFiles/ds/Treatments.pptx"
+		}, {
+			"name": "/treatmentTestFiles/ds/TreatmentCatalogueV2.bad.xsd",
+			"path": "/treatmentTestFiles/ds/TreatmentCatalogueV2.bad.xsd"
+		}, {
+			"name": "/treatmentTestFiles/ds/TreatmentCatalogueV2.good.xsd",
+			"path": "/treatmentTestFiles/ds/TreatmentCatalogueV2.good.xsd"
 		}
 
 	]

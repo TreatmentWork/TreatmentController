@@ -25,7 +25,8 @@
 			<resourceGroupSubnet>TreatmentsSubnet</resourceGroupSubnet>
 			<resourceGroupNSG>TreatmentsNSG</resourceGroupNSG>
 			<vhdName>TreatmentsVHDPrefix-osDisk.a62337c7-44be-4482-83f1-799777bf37ad.vhd</vhdName>
-			<vmSize>Standard_A1</vmSize>
+			<vmSize>Standard_D11_v2</vmSize>
+			<fileShareQuota>11</fileShareQuota>
 		</Configuration>
 	</Treatment>
 	<Treatment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TreatmentCatalogue.xsd">
@@ -54,6 +55,7 @@
 			<resourceGroupNSG>DataPowerNSG</resourceGroupNSG>
 			<vhdName>TreatmentsVHDPrefix-osDisk.6cba80b5-bb49-4bbf-9947-3aece37d7cd7.vhd</vhdName>
 			<vmSize>Standard_D11_v2</vmSize>
+			<fileShareQuota>1</fileShareQuota>
 		</Configuration>
 	</Treatment>
 
@@ -81,9 +83,41 @@
 		<resourceGroupVNet>PDFresourceGroup-vnet</resourceGroupVNet>
 		<resourceGroupSubnet>default</resourceGroupSubnet>
 		<resourceGroupNSG>pdfTestingA1-nsg</resourceGroupNSG>
-		<vhdName>TreatmentsVHDPrefix-osDisk.8405be44-15bb-4e45-8205-09b4d786c894.vhd</vhdName>
+		<vhdName>TreatmentsVHDPrefix-osDisk.57f72e09-5562-43b9-a1c4-25ddbc923755.vhd</vhdName>
 		<vmSize>Standard_A1</vmSize>
+		<fileShareQuota>1</fileShareQuota>
 	</Configuration>
 </Treatment>
+
+<Treatment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TreatmentCatalogue.xsd">
+	<Name>GPG</Name>
+	<Version>1.1</Version>
+	<CreateDate>2001-12-17T09:30:47+05:00</CreateDate>
+	<Status>Active</Status>
+	<Description>This treatment will operate on any file type supported by the ClamAV antivirus CoTs product. It will scan the entire payload and, if no issues are flagged, will report a success. None of the contents of the payload will be modified during this treatment</Description>
+	<Owner>JoeBloggs</Owner>
+	<TrreatmentType>
+		<IsTransformed>false</IsTransformed>
+		<IsCOTs>true</IsCOTs>
+		<IsCustom>true</IsCustom>
+	</TrreatmentType>
+	<Configuration>
+		<azureSubscriptionId>a4ed96ec-5fd0-4d5d-87da-a7047a8595db</azureSubscriptionId>
+		<clientId>1029781a-7c4f-46dc-82c9-6dfbba6860cf</clientId>
+		<applicationSecret>30AJdIaNNdzkR9DnkoG8+s9qO1IaJn7+tkBnaR+c7Dk=</applicationSecret>
+		<domainId>e45da7cd-9f04-4f71-9321-1d9b2fa4dd5f</domainId>
+		<storageAccountId>digitalsignsa50</storageAccountId>
+		<sshPublicKey>./data/publicKey.key</sshPublicKey>
+		<resourceGroupLocation>ukwest</resourceGroupLocation>
+		<resourceGroupName>DigitalSignRG</resourceGroupName>
+		<resourceGroupVNet>DigitalSignVNet</resourceGroupVNet>
+		<resourceGroupSubnet>DigitalSignSubnet</resourceGroupSubnet>
+		<resourceGroupNSG>DigitalSignNSG</resourceGroupNSG>
+		<vhdName>TreatmentsVHDPrefix-osDisk.5da9b900-d38f-4e0c-bdf7-b96982015266.vhd</vhdName>
+		<vmSize>Standard_A1</vmSize>
+		<fileShareQuota>1</fileShareQuota>
+	</Configuration>
+</Treatment>
+
 
 </TreatmentCatalogue>
